@@ -21,5 +21,14 @@ Install frontend dependencies
 yarn install
 ```
 
-TODO
+Run the backend
 
+```shell
+ symfony server:start
+```
+
+Run the frontend development server
+
+```shell
+yarn encore dev-server
+```
