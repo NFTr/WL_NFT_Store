@@ -5,6 +5,7 @@ namespace App\Entity;
 use ApiPlatform\Metadata\ApiResource;
 use App\Repository\NftCollectionRepository;
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
@@ -13,9 +14,8 @@ use Doctrine\ORM\Mapping as ORM;
 class NftCollection
 {
     #[ORM\Id]
-    #[ORM\GeneratedValue]
-    #[ORM\Column]
-    private ?int $id = null;
+    #[ORM\Column(length: 255)]
+    private ?string $id = null;
 
     #[ORM\Column(type: Types::TEXT)]
     private ?string $name = null;
@@ -27,16 +27,23 @@ class NftCollection
     private array $attributes = [];
 
     #[ORM\OneToMany(mappedBy: 'collection', targetEntity: Nft::class)]
-    private NftCollection $nfts;
+    private Collection $nfts;
 
     public function __construct()
     {
         $this->nfts = new ArrayCollection();
     }
 
-    public function getId(): ?int
+    public function getId(): ?string
     {
         return $this->id;
+    }
+
+    public function setId(string $id): self
+    {
+        $this->id = $id;
+
+        return $this;
     }
 
     public function getName(): ?string
@@ -76,9 +83,9 @@ class NftCollection
     }
 
     /**
-     * @return NftCollection<int, Nft>
+     * @return Collection<int, Nft>
      */
-    public function getNfts(): NftCollection
+    public function getNfts(): Collection
     {
         return $this->nfts;
     }

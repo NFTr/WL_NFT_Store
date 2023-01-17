@@ -16,7 +16,7 @@ class Nft
     private ?string $id = null;
 
     #[ORM\Column(length: 255)]
-    private ?string $launcher_id = null;
+    private ?string $launcherId = null;
 
     #[ORM\Column(type: Types::TEXT, nullable: true)]
     private ?string $name = null;
@@ -25,51 +25,54 @@ class Nft
     private ?string $description = null;
 
     #[ORM\Column(nullable: true)]
-    private ?int $royalty_percentage = null;
+    private ?int $royaltyPercentage = null;
 
     #[ORM\Column(length: 255, nullable: true)]
-    private ?string $royalty_address = null;
+    private ?string $royaltyAddress = null;
 
     #[ORM\Column]
-    private array $data_uris = [];
+    private array $dataUris = [];
 
     #[ORM\Column(length: 255)]
-    private ?string $data_hash = null;
+    private ?string $dataHash = null;
 
     #[ORM\Column]
-    private array $meta_uris = [];
+    private array $metaUris = [];
 
     #[ORM\Column(length: 255)]
-    private ?string $meta_hash = null;
+    private ?string $metaHash = null;
 
     #[ORM\Column]
-    private array $license_uris = [];
+    private array $licenseUris = [];
 
     #[ORM\Column(length: 255)]
-    private ?string $license_hash = null;
+    private ?string $licenseHash = null;
 
     #[ORM\Column(nullable: true)]
-    private ?int $edition_number = null;
+    private ?int $editionNumber = null;
 
     #[ORM\Column(nullable: true)]
-    private ?int $edition_total = null;
+    private ?int $editionTotal = null;
 
     #[ORM\Column(nullable: true)]
-    private ?int $series_number = null;
+    private ?int $seriesNumber = null;
 
     #[ORM\Column(nullable: true)]
-    private ?int $series_total = null;
+    private ?int $seriesTotal = null;
 
     #[ORM\Column(nullable: true)]
     private array $attributes = [];
 
     #[ORM\Column]
-    private ?int $mint_height = null;
+    private ?int $mintHeight = null;
 
     #[ORM\ManyToOne(inversedBy: 'nfts')]
     private ?NftCollection $collection = null;
 
-    public function getId(): ?int
+    #[ORM\Column(type: Types::TEXT, nullable: true)]
+    private ?string $thumbnailUri = null;
+
+    public function getId(): ?string
     {
         return $this->id;
     }
@@ -83,12 +86,12 @@ class Nft
 
     public function getLauncherId(): ?string
     {
-        return $this->launcher_id;
+        return $this->launcherId;
     }
 
-    public function setLauncherId(string $launcher_id): self
+    public function setLauncherId(string $launcherId): self
     {
-        $this->launcher_id = $launcher_id;
+        $this->launcherId = $launcherId;
 
         return $this;
     }
@@ -119,144 +122,144 @@ class Nft
 
     public function getRoyaltyPercentage(): ?int
     {
-        return $this->royalty_percentage;
+        return $this->royaltyPercentage;
     }
 
-    public function setRoyaltyPercentage(?int $royalty_percentage): self
+    public function setRoyaltyPercentage(?int $royaltyPercentage): self
     {
-        $this->royalty_percentage = $royalty_percentage;
+        $this->royaltyPercentage = $royaltyPercentage;
 
         return $this;
     }
 
     public function getRoyaltyAddress(): ?string
     {
-        return $this->royalty_address;
+        return $this->royaltyAddress;
     }
 
-    public function setRoyaltyAddress(?string $royalty_address): self
+    public function setRoyaltyAddress(?string $royaltyAddress): self
     {
-        $this->royalty_address = $royalty_address;
+        $this->royaltyAddress = $royaltyAddress;
 
         return $this;
     }
 
     public function getDataUris(): array
     {
-        return $this->data_uris;
+        return $this->dataUris;
     }
 
-    public function setDataUris(array $data_uris): self
+    public function setDataUris(array $dataUris): self
     {
-        $this->data_uris = $data_uris;
+        $this->dataUris = $dataUris;
 
         return $this;
     }
 
     public function getDataHash(): ?string
     {
-        return $this->data_hash;
+        return $this->dataHash;
     }
 
-    public function setDataHash(string $data_hash): self
+    public function setDataHash(string $dataHash): self
     {
-        $this->data_hash = $data_hash;
+        $this->dataHash = $dataHash;
 
         return $this;
     }
 
     public function getMetaUris(): array
     {
-        return $this->meta_uris;
+        return $this->metaUris;
     }
 
-    public function setMetaUris(array $meta_uris): self
+    public function setMetaUris(array $metaUris): self
     {
-        $this->meta_uris = $meta_uris;
+        $this->metaUris = $metaUris;
 
         return $this;
     }
 
     public function getMetaHash(): ?string
     {
-        return $this->meta_hash;
+        return $this->metaHash;
     }
 
-    public function setMetaHash(string $meta_hash): self
+    public function setMetaHash(string $metaHash): self
     {
-        $this->meta_hash = $meta_hash;
+        $this->metaHash = $metaHash;
 
         return $this;
     }
 
     public function getLicenseUris(): array
     {
-        return $this->license_uris;
+        return $this->licenseUris;
     }
 
-    public function setLicenseUris(array $license_uris): self
+    public function setLicenseUris(array $licenseUris): self
     {
-        $this->license_uris = $license_uris;
+        $this->licenseUris = $licenseUris;
 
         return $this;
     }
 
     public function getLicenseHash(): ?string
     {
-        return $this->license_hash;
+        return $this->licenseHash;
     }
 
-    public function setLicenseHash(string $license_hash): self
+    public function setLicenseHash(string $licenseHash): self
     {
-        $this->license_hash = $license_hash;
+        $this->licenseHash = $licenseHash;
 
         return $this;
     }
 
     public function getEditionNumber(): ?int
     {
-        return $this->edition_number;
+        return $this->editionNumber;
     }
 
-    public function setEditionNumber(?int $edition_number): self
+    public function setEditionNumber(?int $editionNumber): self
     {
-        $this->edition_number = $edition_number;
+        $this->editionNumber = $editionNumber;
 
         return $this;
     }
 
     public function getEditionTotal(): ?int
     {
-        return $this->edition_total;
+        return $this->editionTotal;
     }
 
-    public function setEditionTotal(?int $edition_total): self
+    public function setEditionTotal(?int $editionTotal): self
     {
-        $this->edition_total = $edition_total;
+        $this->editionTotal = $editionTotal;
 
         return $this;
     }
 
     public function getSeriesNumber(): ?int
     {
-        return $this->series_number;
+        return $this->seriesNumber;
     }
 
-    public function setSeriesNumber(?int $series_number): self
+    public function setSeriesNumber(?int $seriesNumber): self
     {
-        $this->series_number = $series_number;
+        $this->seriesNumber = $seriesNumber;
 
         return $this;
     }
 
     public function getSeriesTotal(): ?int
     {
-        return $this->series_total;
+        return $this->seriesTotal;
     }
 
-    public function setSeriesTotal(?int $series_total): self
+    public function setSeriesTotal(?int $seriesTotal): self
     {
-        $this->series_total = $series_total;
+        $this->seriesTotal = $seriesTotal;
 
         return $this;
     }
@@ -275,12 +278,12 @@ class Nft
 
     public function getMintHeight(): ?int
     {
-        return $this->mint_height;
+        return $this->mintHeight;
     }
 
-    public function setMintHeight(int $mint_height): self
+    public function setMintHeight(int $mintHeight): self
     {
-        $this->mint_height = $mint_height;
+        $this->mintHeight = $mintHeight;
 
         return $this;
     }
@@ -293,6 +296,18 @@ class Nft
     public function setCollection(?NftCollection $collection): self
     {
         $this->collection = $collection;
+
+        return $this;
+    }
+
+    public function getThumbnailUri(): ?string
+    {
+        return $this->thumbnailUri;
+    }
+
+    public function setThumbnailUri(?string $thumbnailUri): self
+    {
+        $this->thumbnailUri = $thumbnailUri;
 
         return $this;
     }
