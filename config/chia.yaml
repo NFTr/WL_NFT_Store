@@ -1,0 +1,4 @@
+parameters:
+  app.collections:
+    - col1vkehesfftd7j9ae7ufaq42rtry69hckm00tf70tc527jkq42qw6sk0pxpy
+  app.profiles: []

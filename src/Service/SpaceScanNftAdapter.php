@@ -23,12 +23,10 @@ class SpaceScanNftAdapter implements NftAdapter
     private PuzzleHashConverter $puzzleHashConverter;
 
     private string $baseUrl;
-    private string $projectDid;
 
-    public function __construct(string $baseUrl, string $projectDid, HttpClientInterface $client, LoggerInterface $logger, NftRepository $nftRepository, NftCollectionRepository $collectionRepository, PuzzleHashConverter $puzzleHashConverter)
+    public function __construct(string $baseUrl, HttpClientInterface $client, LoggerInterface $logger, NftRepository $nftRepository, NftCollectionRepository $collectionRepository, PuzzleHashConverter $puzzleHashConverter)
     {
         $this->baseUrl = $baseUrl;
-        $this->projectDid = $projectDid;
 
         $this->client = $client;
         $this->logger = $logger;
@@ -44,12 +42,13 @@ class SpaceScanNftAdapter implements NftAdapter
      * @throws ServerExceptionInterface
      * @throws TransportExceptionInterface
      */
-    function importAllNfts(): array
+    function importNftsByCreatorId(string $creatorId): array
     {
+        $this->logger->info("Fetching NFTs created by profile $creatorId");
         $nfts = [];
         $page = 1;
         while (true) {
-            $response = $this->client->request('GET', "$this->baseUrl/1/xch/did/$this->projectDid?page=$page&count=100&type=nft");
+            $response = $this->client->request('GET', "$this->baseUrl/1/xch/did/$creatorId?page=$page&count=100&type=nft");
             $JsonResponse = json_decode($response->getContent());
             $nftsToImport = $JsonResponse->created;
             $page += 1;
@@ -82,11 +81,51 @@ class SpaceScanNftAdapter implements NftAdapter
         return $nfts;
     }
 
+    function importNftsByCollection(string $collectionId): array
+    {
+        $this->logger->info("Fetching NFTs from collection $collectionId");
+        $nfts = [];
+        $page = 1;
+        while (true) {
+            $response = $this->client->request('GET', "$this->baseUrl/api/nft/collection/$collectionId?coin=xch&version=1&page=$page&count=100");
+            $JsonResponse = json_decode($response->getContent());
+            $nftsToImport = $JsonResponse->data;
+            $page += 1;
+            if (sizeof($nftsToImport) == 0) {
+                break;
+            }
+            foreach ($nftsToImport as $nftToImport) {
+                $this->logger->info("Importing NFT $nftToImport->nft_id");
+                $nft = $this->nftRepository->find($nftToImport->nft_id);
+
+                $nft = $this->convertAndUpdateNft($nft, $nftToImport);
+
+                if ($nftToImport->synthetic_id) {
+                    $collection = $this->collectionRepository->find($nftToImport->synthetic_id);
+                    if (!$collection) {
+                        $collection = new NftCollection();
+                        $collection->setId($nftToImport->synthetic_id);
+                        $collection->setName($nftToImport->meta_info->collection->name);
+                        $collection->setAttributes($nftToImport->meta_info->collection->attributes);
+                        $this->collectionRepository->save($collection);
+                    }
+                    $nft->setCollection($collection);
+                }
+
+
+                $this->nftRepository->save($nft, true);
+                $nfts[] = $nft;
+            }
+        }
+        return $nfts;
+    }
+
     private function convertAndUpdateNft(?Nft $nft, mixed $nftToImport): Nft
     {
+        $nftId = trim($nftToImport->nft_id);
         if (!$nft) {
             $nft = new Nft();
-            $nft->setId(trim($nftToImport->nft_id));
+            $nft->setId($nftId);
             $nft->setLauncherId(str_replace('0x', '', $nftToImport->nft_info->launcher_id));
             $nft->setRoyaltyPercentage($nftToImport->nft_info->royalty_percentage);
             $nft->setRoyaltyAddress($this->puzzleHashConverter->encodePuzzleHash($nftToImport->nft_info->royalty_puzzle_hash));
@@ -99,7 +138,7 @@ class SpaceScanNftAdapter implements NftAdapter
             }
         }
 
-        $nft->setThumbnailUri("https://assets.spacescan.io/xch/img/nft/th/$nftToImport->nft_id.webp");
+        $nft->setThumbnailUri("https://assets.spacescan.io/xch/img/nft/th/$nftId.webp");
         $nft->setDataHash($nftToImport->nft_info->data_hash);
         $nft->setDataUris($nftToImport->nft_info->data_uris);
         $nft->setMetaHash($nftToImport->nft_info->metadata_hash);
