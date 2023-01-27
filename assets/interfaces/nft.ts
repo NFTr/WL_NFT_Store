@@ -20,4 +20,5 @@ export interface Nft {
   mintHeight?: number;
   collection?: string;
   thumbnailUri?: string;
+  previewUri?: string;
 }

@@ -90,6 +90,9 @@ class Nft
     #[ORM\Column(type: Types::TEXT, nullable: true)]
     private ?string $thumbnailUri = null;
 
+    #[ORM\Column(type: Types::TEXT, nullable: true)]
+    private ?string $previewUri = null;
+
     public function getId(): ?string
     {
         return $this->id;
@@ -326,6 +329,18 @@ class Nft
     public function setThumbnailUri(?string $thumbnailUri): self
     {
         $this->thumbnailUri = $thumbnailUri;
+
+        return $this;
+    }
+
+    public function getPreviewUri(): ?string
+    {
+        return $this->previewUri;
+    }
+
+    public function setPreviewUri(?string $previewUri): self
+    {
+        $this->previewUri = $previewUri;
 
         return $this;
     }
