@@ -1,8 +1,8 @@
 /** @type {import('tailwindcss').Config} */
 module.exports = {
-  content: ['./assets/**/*.{ts,tsx}', "./templates/**/*.html.twig"],
+  content: ['./assets/**/*.{ts,tsx}', './templates/**/*.html.twig'],
   darkMode: 'class',
-  plugins: [require('@tailwindcss/typography')],
+  plugins: [require('@tailwindcss/aspect-ratio'), require('@tailwindcss/typography')],
   theme: {
     fontSize: {
       xs: ['0.8125rem', { lineHeight: '1.5rem' }],

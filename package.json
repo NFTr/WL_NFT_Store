@@ -6,6 +6,7 @@
     "@hotwired/stimulus": "^3.0.0",
     "@symfony/stimulus-bridge": "^3.2.0",
     "@symfony/webpack-encore": "^4.1.2",
+    "@tailwindcss/aspect-ratio": "^0.4.2",
     "@types/react": "^18.0.26",
     "@types/react-dom": "^18.0.9",
     "core-js": "^3.23.0",
