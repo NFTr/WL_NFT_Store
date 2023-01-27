@@ -6,6 +6,7 @@ import './app.css';
 import { About } from './pages/About';
 import { Gallery } from './pages/Gallery';
 import { Home } from './pages/Home';
+import {NftPage} from "./pages/nfts/[id]";
 
 const router = createBrowserRouter([
   {
@@ -19,6 +20,15 @@ const router = createBrowserRouter([
       {
         path: 'about',
         element: <About />,
+      },
+      {
+        path: 'nfts',
+        children: [
+          {
+            path: ':id',
+            element: <NftPage />,
+          },
+        ]
       },
       {
         path: 'gallery',
