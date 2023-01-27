@@ -6,7 +6,7 @@ import { NftCard } from "./NftCard";
 
 export const Collection: React.FC<{ collectionNfts: any, gridStyle: String }> = ({ collectionNfts, gridStyle }) => {
     if (gridStyle === "grid-compact") {
-    return <div className="grid grid-cols-3 gap-x-6 gap-y-8">
+    return <div className="grid grid-cols-2 gap-x-6 gap-y-8 lg:grid-cols-3">
             {collectionNfts['hydra:member'].map((nft: Nft) => (
             <NftCard key={nft.id} nft={nft} />
             ))}
@@ -29,7 +29,7 @@ export const Collection: React.FC<{ collectionNfts: any, gridStyle: String }> = 
             ))}
         </div>
     } else {
-        return <div className="grid grid-cols-6 gap-x-6 gap-y-8">
+        return <div className="grid grid-cols-4 gap-x-6 gap-y-8 sm:grid-cols-4 lg:grid-cols-6">
             {collectionNfts['hydra:member'].map((nft: Nft) => (
             <NftCard key={nft.id} nft={nft} />
             ))}
