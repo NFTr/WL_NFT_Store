@@ -1,3 +1,4 @@
+import {EyeIcon} from "@heroicons/react/24/solid";
 import React, {useState} from 'react';
 import {useParams} from 'react-router-dom';
 import useSWR from 'swr';
@@ -41,6 +42,36 @@ export const NftPage: React.FC = () => {
         );
     }
 
+    function renderDetails(nft: Nft) {
+        return (
+            <>
+                <h3 className="text-2xl font-bold">Details</h3>
+                <div className="mt-4 flex flex-col gap-4">
+                    <div>
+                        <a
+                            className="flex items-center gap-2 text-sm font-medium text-gray-700 hover:text-gray-900 dark:text-zinc-100 dark:hover:text-zinc-300"
+                            href={`https://www.spacescan.io/xch/nft/${nft.id}`}
+                            target="_blank"
+                        >
+                            <img className="h-6 w-6 rounded-full" src="/spacescan.ico"/>
+                            Inspect on spacescan.io
+                        </a>
+                    </div>
+                    <div>
+                        <a
+                            className="flex items-center gap-2 text-sm font-medium text-gray-700 hover:text-gray-900 dark:text-zinc-100 dark:hover:text-zinc-300"
+                            href={nft.dataUris[0]}
+                            target="_blank"
+                        >
+                            <EyeIcon className="h-6 w-6 rounded-full"/>
+                            Open original
+                        </a>
+                    </div>
+                </div>
+            </>
+        );
+    }
+
     // const nft: any = undefined;
     return (
         <Container>
@@ -72,11 +103,12 @@ export const NftPage: React.FC = () => {
                     )}
                 </div>
                 <div
-                    className="flex rounded-xl bg-white/90 p-6 text-sm font-medium text-zinc-800 shadow-lg shadow-zinc-800/5 ring-1 ring-zinc-900/5 backdrop-blur dark:bg-zinc-800/90 dark:text-zinc-200 dark:ring-white/10">
+                    className="flex rounded-xl bg-white/90 p-6 font-medium text-zinc-800 shadow-lg shadow-zinc-800/5 ring-1 ring-zinc-900/5 backdrop-blur dark:bg-zinc-800/90 dark:text-zinc-200 dark:ring-white/10">
                     {nft ? (
                         <div>
-                            <h1 className="text-5xl font-semibold">{nft.name}</h1>
-                            <p className="mt-4">{nft.description}</p>
+                            <h1 className="text-4xl lg:text-5xl font-semibold">{nft.name}</h1>
+                            <p className="mt-4 lg:mt-8">{nft.description}</p>
+                            <div className="mt-12">{renderDetails(nft)}</div>
                             {nft.attributes && nft.attributes.length > 0 ? (
                                 <div className="mt-12">{renderAttributes(nft.attributes)}</div>
                             ) : (
