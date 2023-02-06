@@ -3,7 +3,10 @@ import ReactDOM from 'react-dom/client';
 import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 import { App } from './App';
 import './app.css';
+import { Collection } from './components/Collection';
 import { About } from './pages/About';
+import { Collections } from './pages/collection/Collections';
+import { CollectionPage } from './pages/collection/[id]';
 import { Gallery } from './pages/Gallery';
 import { Home } from './pages/Home';
 import {NftPage} from "./pages/nfts/[id]";
@@ -27,6 +30,19 @@ const router = createBrowserRouter([
           {
             path: ':id',
             element: <NftPage />,
+          },
+        ]
+      },
+      {
+        path: 'collections',
+        element: <Collections />,
+      },
+      {
+        path: 'collection',
+        children: [
+          {
+            path: ':id',
+            element: <CollectionPage />,
           },
         ]
       },
