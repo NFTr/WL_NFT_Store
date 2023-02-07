@@ -31,18 +31,18 @@ export const CollectionPage: React.FC = () => {
           <div className='sm:ml-10 flex sm:space-x-8'>
             <div className='-translate-y-24 translate-x-4 sm:-translate-y-1/3 sm:translate-x-0'>
              <div className="w-20 h-20 sm:w-32 sm:h-32 lg:w-40 lg:h-40 bg-center rounded-xl border-4 border-zinc-50 dark:border-zinc-800 shadow-lg backdrop-blur" style={{ backgroundImage: `url(${iconUrl})` }}></div> 
-              <div className='hidden sm:grid xs:hidden grid-cols-2 justify-items-center mt-6'> 
-                {twitter?<a href={twitterLink}><TwitterSvg></TwitterSvg></a>:null}       
-                {website?<a href={website}><WebsiteSvg></WebsiteSvg></a>:null}
+              <div className='hidden sm:grid xs:hidden grid-cols-2 justify-items-center mt-6'>
+                {twitter?<a href={twitterLink} target="_blank"><TwitterSvg></TwitterSvg></a>:null}
+                {website?<a href={website} target="_blank"><WebsiteSvg></WebsiteSvg></a>:null}
               </div>
             </div>
            
             <div className='-translate-x-10 sm:translate-x-0 w-full sm:w-8/12 dark:text-white/90'>
               <div className="text-5xl font-bold mt-4 sm:text-4xl lg:text-6xl">{collection?.name}</div>
               <div className="text-sm sm:text-sm mt-4 lg:text-base xl:text-lg">{description}</div>
-              <div className="grid grid-cols-2 justify-items-center mt-6 sm:hidden">    
-                {twitter?<a href={twitterLink}><TwitterSvg></TwitterSvg></a>:null}       
-                {website?<a href={website}><WebsiteSvg></WebsiteSvg></a>:null}
+              <div className="grid grid-cols-2 justify-items-center mt-6 sm:hidden">
+                {twitter?<a href={twitterLink} target="_blank"><TwitterSvg></TwitterSvg></a>:null}
+                {website?<a href={website} target="_blank"><WebsiteSvg></WebsiteSvg></a>:null}
               </div>
             </div>
     
