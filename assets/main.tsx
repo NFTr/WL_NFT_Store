@@ -38,7 +38,7 @@ const router = createBrowserRouter([
         element: <Collections />,
       },
       {
-        path: 'collection',
+        path: 'collections',
         children: [
           {
             path: ':id',
