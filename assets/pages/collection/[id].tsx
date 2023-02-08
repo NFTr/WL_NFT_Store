@@ -20,7 +20,7 @@ export const CollectionPage: React.FC = () => {
   const bannerUrl = collection?.attributes.find((attributes: { type: string; }) => attributes.type === "banner").value;
   const iconUrl = collection?.attributes.find((attributes: { type: string; }) => attributes.type === "icon").value;
   const description = collection?.attributes.find((attributes: { type: string; }) => attributes.type === "description").value;
-  const website = collection?.attributes.find((attributes: { type: string; }) => attributes.type === "website") ? collection?.attributes.find((attributes: { type: string; }) => attributes.type === "website").value : "zesz";
+  const website = collection?.attributes.find((attributes: { type: string; }) => attributes.type === "website") ? collection?.attributes.find((attributes: { type: string; }) => attributes.type === "website").value : null;
   const twitter = collection?.attributes.find((attributes: { type: string; }) => attributes.type === "twitter") ? collection?.attributes.find((attributes: { type: string; }) => attributes.type === "twitter").value : null;
   const twitterLink = `https://twitter.com/${twitter}`;
 
