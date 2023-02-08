@@ -1,5 +1,5 @@
 export interface Nft {
-  "@id"?: string;
+  '@id'?: string;
   id?: string;
   launcherId?: string;
   name?: string;

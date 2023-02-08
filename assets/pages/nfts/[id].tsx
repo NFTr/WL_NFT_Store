@@ -1,4 +1,4 @@
-import {EyeIcon} from "@heroicons/react/24/solid";
+import {EyeIcon} from '@heroicons/react/24/solid';
 import React, {useState} from 'react';
 import {useParams} from 'react-router-dom';
 import useSWR from 'swr';
@@ -106,7 +106,7 @@ export const NftPage: React.FC = () => {
                     className="flex rounded-xl bg-white/90 p-6 font-medium text-zinc-800 shadow-lg shadow-zinc-800/5 ring-1 ring-zinc-900/5 backdrop-blur dark:bg-zinc-800/90 dark:text-zinc-200 dark:ring-white/10">
                     {nft ? (
                         <div>
-                            <h1 className="text-4xl lg:text-5xl font-semibold">{nft.name}</h1>
+                            <h1 className="text-4xl font-semibold lg:text-5xl">{nft.name}</h1>
                             <p className="mt-4 lg:mt-8">{nft.description}</p>
                             <div className="mt-12">{renderDetails(nft)}</div>
                             {nft.attributes && nft.attributes.length > 0 ? (
