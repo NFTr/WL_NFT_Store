@@ -9,7 +9,7 @@ export const CollectionCard: React.FC<{ collection: Collection, gridStyle: strin
 
     if (gridStyle === "grid-compact") {
         return <Link
-        to={`/collection/${collection.id}`}
+        to={`/collections/${collection.id}`}
         className="flex flex-col items-center rounded-xl bg-white/90 text-zinc-800 shadow-lg shadow-zinc-800/5 ring-1 ring-zinc-900/5  backdrop-blur dark:bg-zinc-800/90 dark:text-zinc-200 dark:ring-white/10"
     >
         <div>
@@ -21,7 +21,7 @@ export const CollectionCard: React.FC<{ collection: Collection, gridStyle: strin
     </Link>;
     } else if (gridStyle === "list") {
         return <Link
-        to={`/collection/${collection.id}`}
+        to={`/collections/${collection.id}`}
         className="rounded-xl w-full h-32 bg-white/90 text-zinc-800 shadow-lg shadow-zinc-800/5 ring-1 ring-zinc-900/5  backdrop-blur dark:bg-zinc-800/90 dark:text-zinc-200 dark:ring-white/10"
         
     >
@@ -38,7 +38,7 @@ export const CollectionCard: React.FC<{ collection: Collection, gridStyle: strin
     </Link>;
     } else if (gridStyle === "grid") {
         return <Link
-        to={`/collection/${collection.id}`}
+        to={`/collections/${collection.id}`}
         className="flex flex-col items-center rounded-xl bg-white/90 text-zinc-800 shadow-lg shadow-zinc-800/5 ring-1 ring-zinc-900/5  backdrop-blur dark:bg-zinc-800/90 dark:text-zinc-200 dark:ring-white/10"
     >
         <div>
@@ -50,7 +50,7 @@ export const CollectionCard: React.FC<{ collection: Collection, gridStyle: strin
     </Link>;
     } else  {
         return <Link
-        to={`/collection/${collection.id}`}
+        to={`/collections/${collection.id}`}
         className="flex flex-col items-center rounded-xl bg-white/90 text-zinc-800 shadow-lg shadow-zinc-800/5 ring-1 ring-zinc-900/5  backdrop-blur dark:bg-zinc-800/90 dark:text-zinc-200 dark:ring-white/10"
     >
         <div>

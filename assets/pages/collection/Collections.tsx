@@ -8,18 +8,12 @@ export const Collections: React.FC = () => {
   let collectionId = 'col1vkehesfftd7j9ae7ufaq42rtry69hckm00tf70tc527jkq42qw6sk0pxpy';
   const { data: collection, error, isLoading } = useSWR(`/api/collections`, fetcher);
 
-  const {
-    data: collectionNfts,
-    error: errorNfts,
-    isLoading: isLoadingNfts,
-  } = useSWR(`/api/collections/${collectionId}/nfts`, fetcher);
-
   const [gridStyle, setGridStyle] = React.useState("grid-compact");
 
   const renderHeader = () => (isLoading ? <div>Loading...</div> : <div>{collection.name}</div>);
   const renderGallery = () =>
-    isLoadingNfts ? (
-      <div>Loading NFTs...</div>
+    isLoading ? (
+      <div>Loading...</div>
     ) : (
         <div>
           <div className='w-100 flex justify-end mb-2'>
