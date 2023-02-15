@@ -34,7 +34,7 @@ export const CollectionPage: React.FC = () => {
     isLoading ? (
       <div>Loading...</div>
     ) : (
-      <div className="-mt-10 mb-20 sm:mb-5">
+      <div className="sm:mb-5">
         <img
           className="flex h-60 w-full rounded-xl bg-center object-cover brightness-105 dark:brightness-95"
           src={bannerUrl}
@@ -83,7 +83,7 @@ export const CollectionPage: React.FC = () => {
       <div>Loading NFTs...</div>
     ) : (
       <div>
-        <div className="w-100 mb-2 flex justify-end">
+        <div className="mb-2 flex justify-end">
           <button
             onClick={() => setGridStyle('list')}
             className="rounded py-2 px-4 hover:bg-slate-200 dark:hover:bg-gray-800"
@@ -108,7 +108,7 @@ export const CollectionPage: React.FC = () => {
     );
   return (
     <>
-      <Container className="my-16 sm:mt-32">
+      <Container className="my-8">
         <div className="">{renderHeader()}</div>
         <div>{renderGallery()}</div>
       </Container>

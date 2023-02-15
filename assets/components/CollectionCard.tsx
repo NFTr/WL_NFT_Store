@@ -3,11 +3,11 @@ import { Link } from 'react-router-dom';
 import { Collection } from '../interfaces/collection';
 
 export const CollectionCard: React.FC<{ collection: Collection; gridStyle: string }> = ({ collection, gridStyle }) => {
-  const bannerUrl = collection?.attributes.find((attributes: { type: string }) => attributes.type === 'banner').value;
-  const iconUrl = collection?.attributes.find((attributes: { type: string }) => attributes.type === 'icon').value;
+  const bannerUrl = collection?.attributes.find((attributes: { type: string }) => attributes.type === 'banner')?.value;
+  const iconUrl = collection?.attributes.find((attributes: { type: string }) => attributes.type === 'icon')?.value;
   const description = collection?.attributes.find(
     (attributes: { type: string }) => attributes.type === 'description'
-  ).value;
+  )?.value;
 
   if (gridStyle === 'grid-compact') {
     return (

@@ -5,7 +5,6 @@ import { Container } from '../../components/Container';
 import { fetcher } from '../../utilities/fetcher';
 
 export const Collections: React.FC = () => {
-  let collectionId = 'col1vkehesfftd7j9ae7ufaq42rtry69hckm00tf70tc527jkq42qw6sk0pxpy';
   const { data: collection, error, isLoading } = useSWR(`/api/collections`, fetcher);
 
   const [gridStyle, setGridStyle] = React.useState('grid-compact');
