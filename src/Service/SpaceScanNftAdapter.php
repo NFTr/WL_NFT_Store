@@ -2,8 +2,10 @@
 
 namespace App\Service;
 
+use App\Entity\Did;
 use App\Entity\Nft;
 use App\Entity\NftCollection;
+use App\Repository\DidRepository;
 use App\Repository\NftCollectionRepository;
 use App\Repository\NftRepository;
 use App\Utilities\PuzzleHashConverter;
@@ -19,18 +21,20 @@ class SpaceScanNftAdapter implements NftAdapter
     private HttpClientInterface $client;
     private LoggerInterface $logger;
     private NftRepository $nftRepository;
+    private DidRepository $didRepository;
     private NftCollectionRepository $collectionRepository;
     private PuzzleHashConverter $puzzleHashConverter;
 
     private string $baseUrl;
 
-    public function __construct(string $baseUrl, HttpClientInterface $client, LoggerInterface $logger, NftRepository $nftRepository, NftCollectionRepository $collectionRepository, PuzzleHashConverter $puzzleHashConverter)
+    public function __construct(string $baseUrl, HttpClientInterface $client, LoggerInterface $logger, NftRepository $nftRepository, DidRepository $didRepository, NftCollectionRepository $collectionRepository, PuzzleHashConverter $puzzleHashConverter)
     {
         $this->baseUrl = $baseUrl;
 
         $this->client = $client;
         $this->logger = $logger;
         $this->nftRepository = $nftRepository;
+        $this->didRepository = $didRepository;
         $this->collectionRepository = $collectionRepository;
         $this->puzzleHashConverter = $puzzleHashConverter;
     }
@@ -55,11 +59,22 @@ class SpaceScanNftAdapter implements NftAdapter
             if (sizeof($nftsToImport) == 0) {
                 break;
             }
+
+            $creator = $this->didRepository->find($creatorId);
+            if (!$creator) {
+                $creator = new Did();
+                $creator->setId($creatorId);
+                $creator->setEncodedId($this->puzzleHashConverter->encodePuzzleHash($creatorId, 'did:chia:'));
+                $this->didRepository->save($creator);
+            }
+
             foreach ($nftsToImport as $nftToImport) {
                 $this->logger->info("Importing NFT $nftToImport->nft_id");
                 $nft = $this->nftRepository->find($nftToImport->nft_id);
 
                 $nft = $this->convertAndUpdateNft($nft, $nftToImport);
+
+                $nft->setCreator($creator);
 
                 if ($nftToImport->synthetic_id) {
                     $collection = $this->collectionRepository->find($nftToImport->synthetic_id);
@@ -99,6 +114,17 @@ class SpaceScanNftAdapter implements NftAdapter
                 $nft = $this->nftRepository->find($nftToImport->nft_id);
 
                 $nft = $this->convertAndUpdateNft($nft, $nftToImport);
+
+                if ($nftToImport->minter_did) {
+                    $creator = $this->didRepository->find($nftToImport->minter_did);
+                    if (!$creator) {
+                        $creator = new Did();
+                        $creator->setId($nftToImport->minter_did);
+                        $creator->setEncodedId($this->puzzleHashConverter->encodePuzzleHash($nftToImport->minter_did, 'did:chia:'));
+                        $this->didRepository->save($creator);
+                    }
+                    $nft->setCreator($creator);
+                }
 
                 if ($nftToImport->synthetic_id) {
                     $collection = $this->collectionRepository->find($nftToImport->synthetic_id);
