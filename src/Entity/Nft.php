@@ -27,6 +27,26 @@ use Doctrine\ORM\Mapping as ORM;
         )
     ]
 )]
+#[ApiResource(
+    uriTemplate: '/dids/{id}/created_nfts',
+    operations: [new GetCollection()],
+    uriVariables: [
+        'id' => new Link(
+            fromProperty: 'createdNfts',
+            fromClass: Did::class
+        )
+    ]
+)]
+#[ApiResource(
+    uriTemplate: '/dids/{id}/owned_nfts',
+    operations: [new GetCollection()],
+    uriVariables: [
+        'id' => new Link(
+            fromProperty: 'ownedNfts',
+            fromClass: Did::class
+        )
+    ]
+)]
 class Nft
 {
     #[ORM\Id]
@@ -92,6 +112,12 @@ class Nft
 
     #[ORM\Column(type: Types::TEXT, nullable: true)]
     private ?string $previewUri = null;
+
+    #[ORM\ManyToOne(inversedBy: 'createdNfts')]
+    private ?Did $creator = null;
+
+    #[ORM\ManyToOne(inversedBy: 'ownedNfts')]
+    private ?Did $owner = null;
 
     public function getId(): ?string
     {
@@ -341,6 +367,30 @@ class Nft
     public function setPreviewUri(?string $previewUri): self
     {
         $this->previewUri = $previewUri;
+
+        return $this;
+    }
+
+    public function getCreator(): ?Did
+    {
+        return $this->creator;
+    }
+
+    public function setCreator(?Did $creator): self
+    {
+        $this->creator = $creator;
+
+        return $this;
+    }
+
+    public function getOwner(): ?Did
+    {
+        return $this->owner;
+    }
+
+    public function setOwner(?Did $owner): self
+    {
+        $this->owner = $owner;
 
         return $this;
     }
