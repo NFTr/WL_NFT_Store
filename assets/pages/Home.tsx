@@ -5,6 +5,8 @@ import { Container } from '../components/Container';
 
 import { DiscordIcon, TwitterIcon } from '../components/SocialIcons';
 
+const homeData = require('../../config/homeConfig.json');
+
 function SocialLink({ icon: Icon, ...props }: any) {
   return (
     <Link className="group -m-1 p-1" {...props}>
@@ -61,19 +63,19 @@ export function Home() {
       <Container className="mt-9">
         <div className="max-w-2xl">
           <h1 className="text-4xl font-bold tracking-tight text-zinc-800 dark:text-zinc-100 sm:text-5xl">
-            Chia Friends
+            {homeData.title}
           </h1>
           <h2 className="mt-4 text-2xl font-bold tracking-tight text-zinc-800 dark:text-zinc-100 sm:text-3xl">
-            10,000 eco-bit NFTs on Chia, from Chia.
+            {homeData.subtitle}
           </h2>
-          <p className="mt-6 text-base text-zinc-600 dark:text-zinc-400">
-            Display your Chia Friend PFP on Twitter and more to help spread the news about building projects on our new
-            NFT standard. There’s also a puzzle embedded in the collection for the community to discover…that’s your
-            only hint for now!
-          </p>
+          <p className="mt-6 text-base text-zinc-600 dark:text-zinc-400">{homeData.description}</p>
           <div className="mt-6 flex gap-6">
-            <SocialLink to="https://twitter.com/chia_friends" aria-label="Follow on Twitter" icon={TwitterIcon} />
-            <SocialLink to="https://discord.com/invite/ECAteZ2B6n" aria-label="Join Discord" icon={DiscordIcon} />
+            {homeData.twitterLink !== '' ? (
+              <SocialLink to={homeData.twitterLink} aria-label="Follow on Twitter" icon={TwitterIcon} />
+            ) : null}
+            {homeData.discordLink !== '' ? (
+              <SocialLink to={homeData.discordLink} aria-label="Join Discord" icon={DiscordIcon} />
+            ) : null}
           </div>
         </div>
       </Container>
