@@ -9,6 +9,7 @@ use App\Repository\DidRepository;
 use App\Repository\NftCollectionRepository;
 use App\Repository\NftRepository;
 use App\Utilities\PuzzleHashConverter;
+use Doctrine\ORM\EntityManagerInterface;
 use Psr\Log\LoggerInterface;
 use Symfony\Contracts\HttpClient\Exception\ClientExceptionInterface;
 use Symfony\Contracts\HttpClient\Exception\RedirectionExceptionInterface;
@@ -24,10 +25,11 @@ class SpaceScanNftAdapter implements NftAdapter
     private DidRepository $didRepository;
     private NftCollectionRepository $collectionRepository;
     private PuzzleHashConverter $puzzleHashConverter;
+    private EntityManagerInterface $entityManager;
 
     private string $baseUrl;
 
-    public function __construct(string $baseUrl, HttpClientInterface $client, LoggerInterface $logger, NftRepository $nftRepository, DidRepository $didRepository, NftCollectionRepository $collectionRepository, PuzzleHashConverter $puzzleHashConverter)
+    public function __construct(string $baseUrl, HttpClientInterface $client, LoggerInterface $logger, NftRepository $nftRepository, DidRepository $didRepository, NftCollectionRepository $collectionRepository, PuzzleHashConverter $puzzleHashConverter, EntityManagerInterface $entityManager)
     {
         $this->baseUrl = $baseUrl;
 
@@ -37,6 +39,7 @@ class SpaceScanNftAdapter implements NftAdapter
         $this->didRepository = $didRepository;
         $this->collectionRepository = $collectionRepository;
         $this->puzzleHashConverter = $puzzleHashConverter;
+        $this->entityManager = $entityManager;
     }
 
     /**
@@ -96,10 +99,16 @@ class SpaceScanNftAdapter implements NftAdapter
         return $nfts;
     }
 
-    function importNftsByCollection(string $collectionId): array
+    /**
+     * @throws TransportExceptionInterface
+     * @throws ServerExceptionInterface
+     * @throws RedirectionExceptionInterface
+     * @throws ClientExceptionInterface
+     */
+    function importNftsByCollection(string $collectionId): void
     {
+        $this->entityManager->getConnection()->getConfiguration()->setSQLLogger(null);
         $this->logger->info("Fetching NFTs from collection $collectionId");
-        $nfts = [];
         $page = 1;
         while (true) {
             $response = $this->client->request('GET', "$this->baseUrl/api/nft/collection/$collectionId?coin=xch&version=1&page=$page&count=100");
@@ -139,11 +148,11 @@ class SpaceScanNftAdapter implements NftAdapter
                 }
 
 
-                $this->nftRepository->save($nft, true);
-                $nfts[] = $nft;
+                $this->nftRepository->save($nft);
             }
+            $this->entityManager->flush();
+            $this->entityManager->clear();
         }
-        return $nfts;
     }
 
     private function convertAndUpdateNft(?Nft $nft, mixed $nftToImport): Nft
