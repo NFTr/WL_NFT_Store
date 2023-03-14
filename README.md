@@ -16,11 +16,19 @@
 
 ### Setup
 
-Create file `env.local` to specify the database connection string and your Chia configuration.
+Create file `env.local` to specify the database connection string.
 
 ```shell
 DATABASE_URL="mysql://root:my-secret-pw@127.0.0.1:3306/app?serverVersion=8&charset=utf8mb4"
-PROJECT_DID=90fcc1c8d5716c43f6999ccdd1d178613baaba32b27092562f67efb846931156
+```
+
+Update file `config/chia.yaml` to specify the collections and profiles you want to import.
+
+```yaml
+parameters:
+  app.collections:
+    - col1vkehesfftd7j9ae7ufaq42rtry69hckm00tf70tc527jkq42qw6sk0pxpy # Ultimate Farmers Club
+  app.profiles: []
 ```
 
 Install backend dependencies
@@ -40,6 +48,14 @@ Execute database migrations
 ```shell
 php bin/console doctrine:migrations:migrate
 ```
+
+Run the NFT importer command
+
+```shell
+ php bin/console app:import:nfts -vv --no-debug
+```
+
+The `-vv` flag allows you to see the progress and `--no-debug` prevents memory leaks for large collections.  
 
 ### Run in development
 
