@@ -17,19 +17,12 @@ function SocialLink({ icon: Icon, ...props }: any) {
 
 function Photos() {
   let rotations = ['rotate-2', '-rotate-2', 'rotate-2', 'rotate-2', '-rotate-2'];
-
-  const images = [
-    'https://assets.mainnet.mintgarden.io/thumbnails/e49938a641b71a3dead9d309a6f96a6f502b68d2096b4318d7b9a21d0d77633a.png',
-    'https://assets.mainnet.mintgarden.io/thumbnails/a45e755bf2b6bf7cd9dd39394db6a286b789ba5b34fff8395453a1a5f6e5c7d0.webp',
-    'https://assets.mainnet.mintgarden.io/thumbnails/74c7f4dff57ef1da134bb3e904195e1d6eb33278f9dcb28d1f464665b52cb548.png',
-    'https://assets.mainnet.mintgarden.io/thumbnails/944b20b91b985fa30c7215cdefbda66cd0ee450eea609de7f0f80b0297a51de2.png',
-    'https://assets.mainnet.mintgarden.io/thumbnails/3029e6ad8405272e8cd0921e67e0a3d194a1687acbe8881f01d6cf155ef94c72.png',
-  ];
+  const images = homeData.highlightNfts;
 
   return (
     <div className="mt-16 sm:mt-20">
       <div className="-my-4 flex justify-center gap-5 overflow-hidden py-4 sm:gap-8">
-        {images.map((image, imageIndex) => (
+        {images.map((image: string | undefined, imageIndex: number) => (
           <div
             key={image}
             className={clsx(

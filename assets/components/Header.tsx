@@ -207,12 +207,10 @@ function AvatarContainer({ className, ...props }: any) {
 }
 
 function Avatar({ large = false, className, ...props }: any) {
+  const homeData = require('../../config/homeConfig.json');
   return (
     <Link to="/" aria-label="Home" className={clsx(className, 'pointer-events-auto')} {...props}>
-      <img
-        className="rounded-full"
-        src="https://assets.mainnet.mintgarden.io/thumbnails/34f03d6d638d7a88ee4ef22241a65cf4fbad6a9cc9273bb18927cfba95d46ead_512.png"
-      />
+      <img className="rounded-full" src={homeData.logo} />
     </Link>
   );
 }
