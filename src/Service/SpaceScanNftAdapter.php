@@ -135,6 +135,17 @@ class SpaceScanNftAdapter implements NftAdapter
                     $nft->setCreator($creator);
                 }
 
+                if ($nftToImport->nft_info->owner_did) {
+                    $owner = $this->didRepository->find($nftToImport->nft_info->owner_did);
+                    if (!$owner) {
+                        $owner = new Did();
+                        $owner->setId($nftToImport->nft_info->owner_did);
+                        $owner->setEncodedId($this->puzzleHashConverter->encodePuzzleHash($nftToImport->nft_info->owner_did, 'did:chia:'));
+                        $this->didRepository->save($owner);
+                    }
+                    $nft->setOwner($owner);
+                }
+
                 if ($nftToImport->synthetic_id) {
                     $collection = $this->collectionRepository->find($nftToImport->synthetic_id);
                     if (!$collection) {
