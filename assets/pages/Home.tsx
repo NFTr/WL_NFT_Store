@@ -1,11 +1,12 @@
 import clsx from 'clsx';
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Container } from '../components/Container';
 
 import { DiscordIcon, TwitterIcon } from '../components/SocialIcons';
 
-const homeData = require('../../config/homeConfig.json');
+import useSWR from 'swr';
+import { fetcher } from '../utilities/fetcher';
 
 function SocialLink({ icon: Icon, ...props }: any) {
   return (
@@ -15,9 +16,9 @@ function SocialLink({ icon: Icon, ...props }: any) {
   );
 }
 
-function Photos() {
+function Photos({ data: homeData }: any) {
   let rotations = ['rotate-2', '-rotate-2', 'rotate-2', 'rotate-2', '-rotate-2'];
-  const images = homeData.highlightNfts;
+  const images = homeData?.highlightNfts;
 
   return (
     <div className="mt-16 sm:mt-20">
@@ -44,6 +45,8 @@ function Photos() {
 }
 
 export function Home() {
+  const { data: homeData } = useSWR('/api/homeContent', fetcher);
+
   return (
     <>
       {/*<Head>*/}
@@ -56,23 +59,23 @@ export function Home() {
       <Container className="mt-9">
         <div className="max-w-2xl">
           <h1 className="text-4xl font-bold tracking-tight text-zinc-800 dark:text-zinc-100 sm:text-5xl">
-            {homeData.title}
+            {homeData?.homeContent.title}
           </h1>
           <h2 className="mt-4 text-2xl font-bold tracking-tight text-zinc-800 dark:text-zinc-100 sm:text-3xl">
-            {homeData.subtitle}
+            {homeData?.homeContent.subtitle}
           </h2>
-          <p className="mt-6 text-base text-zinc-600 dark:text-zinc-400">{homeData.description}</p>
+          <p className="mt-6 text-base text-zinc-600 dark:text-zinc-400">{homeData?.homeContent.description}</p>
           <div className="mt-6 flex gap-6">
-            {homeData.twitterLink !== '' ? (
-              <SocialLink to={homeData.twitterLink} aria-label="Follow on Twitter" icon={TwitterIcon} />
+            {homeData?.homeContent.twitterLink !== '' ? (
+              <SocialLink to={homeData?.homeContent.twitterLink} aria-label="Follow on Twitter" icon={TwitterIcon} />
             ) : null}
-            {homeData.discordLink !== '' ? (
-              <SocialLink to={homeData.discordLink} aria-label="Join Discord" icon={DiscordIcon} />
+            {homeData?.homeContent.discordLink !== '' ? (
+              <SocialLink to={homeData?.homeContent.discordLink} aria-label="Join Discord" icon={DiscordIcon} />
             ) : null}
           </div>
         </div>
       </Container>
-      <Photos />
+      {homeData?.homeContent.highlightNfts.length > 0 ? <Photos data={homeData?.homeContent} /> : null}
       {/*<Container className="mt-24 md:mt-28">*/}
       {/*  <div className="mx-auto grid max-w-xl grid-cols-1 gap-y-20 lg:max-w-none lg:grid-cols-2">*/}
       {/*    <div className="flex flex-col gap-16">*/}

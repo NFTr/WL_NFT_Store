@@ -5,6 +5,9 @@ import { Container } from './Container';
 import React, { Fragment, useEffect, useRef } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 
+import useSWR from 'swr';
+import { fetcher } from '../utilities/fetcher';
+
 function CloseIcon(props: any) {
   return (
     <svg viewBox="0 0 24 24" aria-hidden="true" {...props}>
@@ -207,10 +210,10 @@ function AvatarContainer({ className, ...props }: any) {
 }
 
 function Avatar({ large = false, className, ...props }: any) {
-  const homeData = require('../../config/homeConfig.json');
+  const { data: homeData } = useSWR('/api/homeContent', fetcher);
   return (
     <Link to="/" aria-label="Home" className={clsx(className, 'pointer-events-auto')} {...props}>
-      <img className="rounded-full" src={homeData.logo} />
+      <img className="rounded-full" src={homeData?.homeContent.logo} />
     </Link>
   );
 }
