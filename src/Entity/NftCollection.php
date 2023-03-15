@@ -10,6 +10,7 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Annotation\Groups;
 
 #[ORM\Entity(repositoryClass: NftCollectionRepository::class)]
 #[ApiResource(
@@ -17,21 +18,26 @@ use Doctrine\ORM\Mapping as ORM;
     operations: [
         new Get(),
         new GetCollection()
-    ]
+    ],
+    normalizationContext: ['groups' => ['get']]
 )]
 class NftCollection
 {
     #[ORM\Id]
     #[ORM\Column(length: 255)]
+    #[Groups('get')]
     private ?string $id = null;
 
     #[ORM\Column(type: Types::TEXT)]
+    #[Groups('get')]
     private ?string $name = null;
 
     #[ORM\Column(type: Types::TEXT, nullable: true)]
+    #[Groups('get')]
     private ?string $description = null;
 
     #[ORM\Column(nullable: true)]
+    #[Groups('get')]
     private array $attributes = [];
 
     #[ORM\OneToMany(mappedBy: 'collection', targetEntity: Nft::class)]
