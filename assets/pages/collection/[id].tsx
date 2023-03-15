@@ -17,18 +17,17 @@ export const CollectionPage: React.FC = () => {
   } = useSWR(`/api/collections/${id}/nfts`, fetcher);
 
   const [gridStyle, setGridStyle] = React.useState('grid-compact');
-  const bannerUrl = collection?.attributes.find((attributes: { type: string }) => attributes.type === 'banner').value;
-  const iconUrl = collection?.attributes.find((attributes: { type: string }) => attributes.type === 'icon').value;
-  const description = collection?.attributes.find(
-    (attributes: { type: string }) => attributes.type === 'description'
-  ).value;
-  const website = collection?.attributes.find((attributes: { type: string }) => attributes.type === 'website')
-    ? collection?.attributes.find((attributes: { type: string }) => attributes.type === 'website').value
-    : null;
-  const twitter = collection?.attributes.find((attributes: { type: string }) => attributes.type === 'twitter')
-    ? collection?.attributes.find((attributes: { type: string }) => attributes.type === 'twitter').value
-    : null;
-  const twitterLink = `https://twitter.com/${twitter}`;
+
+  const getAttributeValue = (type: string): string | undefined => {
+    return collection?.attributes.find((attributes: { type: string }) => attributes.type === type)?.value;
+  };
+
+  const bannerUrl = getAttributeValue('banner');
+  const iconUrl = getAttributeValue('icon');
+  const description = getAttributeValue('description');
+  const website = getAttributeValue('website');
+  const twitter = getAttributeValue('twitter');
+  const twitterLink = twitter ? `https://twitter.com/${twitter}` : undefined;
 
   const renderHeader = () =>
     isLoading ? (
