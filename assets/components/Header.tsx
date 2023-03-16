@@ -210,10 +210,10 @@ function AvatarContainer({ className, ...props }: any) {
 }
 
 function Avatar({ large = false, className, ...props }: any) {
-  const { data: homeData } = useSWR('/api/homeContent', fetcher);
+  const { data: src } = useSWR('/api/homeContent', fetcher);
   return (
     <Link to="/" aria-label="Home" className={clsx(className, 'pointer-events-auto')} {...props}>
-      <img className="rounded-full" src={homeData?.homeContent.logo} />
+      <img className="rounded-full" src={src?.logo} />
     </Link>
   );
 }
@@ -314,6 +314,8 @@ export function Header() {
     };
   }, [isHomePage]);
 
+  const { data: homeData } = useSWR('/api/homeContent', fetcher);
+
   return (
     <>
       <header
@@ -357,9 +359,17 @@ export function Header() {
             <div className="relative flex gap-4">
               <div className="flex flex-1">
                 {!isHomePage && (
-                  <AvatarContainer>
-                    <Avatar />
-                  </AvatarContainer>
+                  <div className="flex">
+                    <AvatarContainer>
+                      <Avatar />
+                    </AvatarContainer>
+                    <div className="ml-3 flex flex-col justify-center dark:text-white/90">{homeData?.motto}</div>
+                  </div>
+                )}
+                {isHomePage && (
+                  <div className="flex flex-col justify-center dark:text-white/90">
+                    <div className="ml-2 text-xl font-bold">{homeData?.motto}</div>
+                  </div>
                 )}
               </div>
               <div className="flex flex-1 justify-end md:justify-center">

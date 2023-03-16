@@ -16,11 +16,12 @@ class HomeContentController
      */
     public function index()
     {
-        $configFile = __DIR__.'/../../config/homeConfig.yaml'; // Path to your YAML file
+        $configFile = __DIR__.'/../../config/chia.yaml';
 
-        $configData = Yaml::parseFile($configFile); // Parse the YAML file
+        $configData = Yaml::parseFile($configFile);
+        $homeContent = $configData['parameters']['app.homeContent'];
         $response = new JsonResponse();
-        $response->setData($configData);
+        $response->setData($homeContent);
 
         return $response;
     }

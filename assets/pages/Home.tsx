@@ -59,23 +59,23 @@ export function Home() {
       <Container className="mt-9">
         <div className="max-w-2xl">
           <h1 className="text-4xl font-bold tracking-tight text-zinc-800 dark:text-zinc-100 sm:text-5xl">
-            {homeData?.homeContent.title}
+            {homeData?.title}
           </h1>
           <h2 className="mt-4 text-2xl font-bold tracking-tight text-zinc-800 dark:text-zinc-100 sm:text-3xl">
-            {homeData?.homeContent.subtitle}
+            {homeData?.subtitle}
           </h2>
-          <p className="mt-6 text-base text-zinc-600 dark:text-zinc-400">{homeData?.homeContent.description}</p>
+          <p className="mt-6 text-base text-zinc-600 dark:text-zinc-400">{homeData?.description}</p>
           <div className="mt-6 flex gap-6">
-            {homeData?.homeContent.twitterLink !== '' ? (
-              <SocialLink to={homeData?.homeContent.twitterLink} aria-label="Follow on Twitter" icon={TwitterIcon} />
+            {homeData?.twitterLink !== '' ? (
+              <SocialLink to={homeData?.twitterLink} aria-label="Follow on Twitter" icon={TwitterIcon} />
             ) : null}
-            {homeData?.homeContent.discordLink !== '' ? (
-              <SocialLink to={homeData?.homeContent.discordLink} aria-label="Join Discord" icon={DiscordIcon} />
+            {homeData?.discordLink !== '' ? (
+              <SocialLink to={homeData?.discordLink} aria-label="Join Discord" icon={DiscordIcon} />
             ) : null}
           </div>
         </div>
       </Container>
-      {homeData?.homeContent.highlightNfts.length > 0 ? <Photos data={homeData?.homeContent} /> : null}
+      {homeData?.highlightNfts.length > 0 ? <Photos data={homeData} /> : null}
       {/*<Container className="mt-24 md:mt-28">*/}
       {/*  <div className="mx-auto grid max-w-xl grid-cols-1 gap-y-20 lg:max-w-none lg:grid-cols-2">*/}
       {/*    <div className="flex flex-col gap-16">*/}
