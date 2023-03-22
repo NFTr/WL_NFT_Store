@@ -61,9 +61,9 @@ class DexieOfferAdapter implements OfferAdapter
 
                 $offer = $this->convertAndUpdateOffer($offer, $offerToImport);
 
-                foreach ($offer->getRequested() + $offer->getOffered() as $requestedItem) {
-                    if (str_starts_with($requestedItem->id, 'nft1')) {
-                        $nft = $this->nftRepository->find($requestedItem->id);
+                foreach ($offer->getRequested() +  $offer->getOffered() as $item) {
+                    if (is_object($item) && str_starts_with($item->id, 'nft1')) {
+                        $nft = $this->nftRepository->find($item->id);
                         if ($nft) {
                             $offer->addNft($nft);
                         }
@@ -88,7 +88,7 @@ class DexieOfferAdapter implements OfferAdapter
             $offer->setId($offerId);
             $offer->setDateFound(DateTime::createFromFormat('Y-m-d\TH:i:s.v\Z', $offerToImport->date_found));
             $offer->setOffered($offerToImport->offered);
-            $offer->setOffered($offerToImport->requested);
+            $offer->setRequested($offerToImport->requested);
             $offer->setOfferstring($offerToImport->offer);
             $offer->setSource('dexie');
         }
