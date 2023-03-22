@@ -74,6 +74,9 @@ class DexieOfferAdapter implements OfferAdapter
             }
             $this->entityManager->flush();
             $this->entityManager->clear();
+
+            // Sleep for 500ms to not run into rate limiting
+            usleep(500000);
         }
     }
 
