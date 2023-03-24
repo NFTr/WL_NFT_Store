@@ -5,6 +5,7 @@ namespace App\Service;
 use App\Entity\Offer;
 use App\Repository\NftRepository;
 use App\Repository\OfferRepository;
+use App\Utilities\PuzzleHashConverter;
 use DateTime;
 use Doctrine\ORM\EntityManagerInterface;
 use Psr\Log\LoggerInterface;
@@ -21,10 +22,11 @@ class DexieOfferAdapter implements OfferAdapter
     private OfferRepository $offerRepository;
     private NftRepository $nftRepository;
     private EntityManagerInterface $entityManager;
+    private PuzzleHashConverter $puzzleHashConverter;
 
     private string $baseUrl;
 
-    public function __construct(string $baseUrl, HttpClientInterface $client, LoggerInterface $logger, OfferRepository $offerRepository, NftRepository $nftRepository, EntityManagerInterface $entityManager)
+    public function __construct(string $baseUrl, HttpClientInterface $client, LoggerInterface $logger, OfferRepository $offerRepository, NftRepository $nftRepository, EntityManagerInterface $entityManager, PuzzleHashConverter $puzzleHashConverter)
     {
         $this->baseUrl = $baseUrl;
 
@@ -33,6 +35,7 @@ class DexieOfferAdapter implements OfferAdapter
         $this->offerRepository = $offerRepository;
         $this->entityManager = $entityManager;
         $this->nftRepository = $nftRepository;
+        $this->puzzleHashConverter = $puzzleHashConverter;
     }
 
 
@@ -61,9 +64,10 @@ class DexieOfferAdapter implements OfferAdapter
 
                 $offer = $this->convertAndUpdateOffer($offer, $offerToImport);
 
-                foreach ($offer->getRequested() +  $offer->getOffered() as $item) {
-                    if (is_object($item) && str_starts_with($item->id, 'nft1')) {
-                        $nft = $this->nftRepository->find($item->id);
+                foreach (array_merge($offer->getRequested(), $offer->getOffered()) as $item) {
+                    if (is_array($item) && str_starts_with($item['id'], 'nft1')) {
+                        $nft = $this->nftRepository->find($item['id']);
+                        print_r($item['id']);
                         if ($nft) {
                             $offer->addNft($nft);
                         }
@@ -80,6 +84,17 @@ class DexieOfferAdapter implements OfferAdapter
         }
     }
 
+    private function cleanUpOfferedRequested(array $offeredRequested): array
+    {
+        $cleanup = function (mixed $value): mixed {
+            if (property_exists($value, 'is_nft')) {
+                return ['id' => $this->puzzleHashConverter->encodePuzzleHash($value->id, 'nft'), 'amount' => 1];
+            }
+            return $value;
+        };
+        return array_map($cleanup, $offeredRequested);
+    }
+
     private function convertAndUpdateOffer(?Offer $offer, mixed $offerToImport): Offer
     {
         $offerId = trim($offerToImport->id);
@@ -87,8 +102,8 @@ class DexieOfferAdapter implements OfferAdapter
             $offer = new Offer();
             $offer->setId($offerId);
             $offer->setDateFound(DateTime::createFromFormat('Y-m-d\TH:i:s.v\Z', $offerToImport->date_found));
-            $offer->setOffered($offerToImport->offered);
-            $offer->setRequested($offerToImport->requested);
+            $offer->setOffered($this->cleanUpOfferedRequested($offerToImport->offered));
+            $offer->setRequested($this->cleanUpOfferedRequested($offerToImport->requested));
             $offer->setOfferstring($offerToImport->offer);
             $offer->setSource('dexie');
         }
