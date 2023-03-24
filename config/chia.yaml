@@ -1,9 +1,10 @@
 parameters:
   app.collections:
     - col1vkehesfftd7j9ae7ufaq42rtry69hckm00tf70tc527jkq42qw6sk0pxpy
+    - col1fnzpxnhr365z9d5phxc0a9nya3ypn5t8je4de97j3pux2anl64uqv0m0gs
 
   app.profiles:
-    - col1fnzpxnhr365z9d5phxc0a9nya3ypn5t8je4de97j3pux2anl64uqv0m0gs
+    - 19bd6b5cbbbc7571222fea5f7a7c74eb045ffc5db0903ae039f07bf1a9c211ec
 
   app.homeContent:
     logo: https://assets.mainnet.mintgarden.io/thumbnails/34f03d6d638d7a88ee4ef22241a65cf4fbad6a9cc9273bb18927cfba95d46ead_512.png

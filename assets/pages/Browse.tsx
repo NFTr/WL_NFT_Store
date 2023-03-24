@@ -8,66 +8,74 @@ import { Collection } from '../components/Collection';
 
 export const Browse: React.FC = () => {
   const [gridStyle, setGridStyle] = React.useState('grid-compact');
+  const [name, setName] = useState('null');
 
   const fetcher = (url: string) => fetch(url).then((res) => res.json());
+  const { data: browseContent, isLoading } = useSWR('/api/browseContent', fetcher);
 
-  const renderGallery = () => {
-    const { data: browseContent, isLoading } = useSWR('/api/browseContent', fetcher);
-
+  const BrowseCollection = ({ collectionId }: { collectionId: string }) => {
     const {
       data: collectionNfts,
       error: errorNfts,
-      isLoading: isLoadingNfts,
-    } = useSWR(`/api/collections/${browseContent}/nfts`, fetcher);
+      isLoading: isNftsLoading,
+    } = useSWR(`/api/collections/${collectionId}/nfts`, fetcher);
+    const { data: collection, error, isLoading: isLoadingName } = useSWR(`/api/collections/${collectionId}`, fetcher);
 
+    if (isNftsLoading || isLoadingName) {
+      return <div>Loading Collection NFTs...</div>;
+    }
+
+    if (errorNfts) {
+      return <div>Error loading Collection NFTs</div>;
+    }
+    setName('Collection ' + collection.name);
+    return <Collection collectionNfts={collectionNfts} gridStyle={gridStyle} />;
+  };
+
+  const BrowseProfile = ({ profileId }: { profileId: string }) => {
     const {
       data: createdNfts,
       error: createderrorNfts,
       isLoading: isLoadingCreatedNfts,
-    } = useSWR(`/api/dids/${browseContent}/created_nfts`, fetcher);
+    } = useSWR(`/api/dids/${profileId}/created_nfts`, fetcher);
+    const { data: did, error, isLoading: isLoadingName } = useSWR(`/api/dids/${profileId}`, fetcher);
 
-    const {
-      data: ownedNfts,
-      error: ownederrorNfts,
-      isLoading: isLoadingOwnedNfts,
-    } = useSWR(`/api/dids/${browseContent}/owned_nfts`, fetcher);
+    if (isLoadingCreatedNfts || isLoadingName) {
+      return <div>Loading Profile NFTs...</div>;
+    }
 
+    if (createderrorNfts) {
+      return <div>Error loading Profile NFTs</div>;
+    }
+    if (did.name != 'undefined') {
+      setName('Profile ' + did.encodedId);
+    } else {
+      setName('Profile ' + did.name);
+    }
+    console.log(profileId);
+    return <Collection collectionNfts={createdNfts} gridStyle={gridStyle} />;
+  };
+
+  const renderGallery = () => {
     if (isLoading) {
       return <div>Loading...</div>;
     }
 
-    if (browseContent && browseContent.startsWith('col') && collectionNfts) {
-      return <Collection collectionNfts={collectionNfts} gridStyle={gridStyle} />;
-    } else if (browseContent && createdNfts) {
-      return (
-        <div>
-          {createdNfts['hydra:totalItems'] === 0 ? (
-            <div></div>
-          ) : (
-            <div>
-              <div className="mb-8 flex justify-center text-4xl font-bold dark:text-white/90">Created NFTs</div>
-              <Collection collectionNfts={createdNfts} gridStyle={gridStyle} />
-            </div>
-          )}
+    let content = <div>Fail</div>;
 
-          {ownedNfts['hydra:totalItems'] === 0 ? (
-            <div></div>
-          ) : (
-            <div>
-              <div className="mb-8 flex justify-center text-4xl font-bold dark:text-white/90">Owned NFTs</div>
-              <Collection collectionNfts={ownedNfts} gridStyle={gridStyle} />
-            </div>
-          )}
-        </div>
-      );
+    if (browseContent.collections.length === 0) {
+      content = <BrowseProfile profileId={browseContent.profiles[0]} />;
     } else {
-      return <div></div>;
+      content = <BrowseCollection collectionId={browseContent.collections[0]} />;
     }
+
+    return content;
   };
 
   const renderHeader = () => (
     <div>
       <div className="mb-8 flex justify-center text-6xl font-bold dark:text-white/90">Browse</div>
+      <div className="mb-8 flex justify-center text-3xl font-bold dark:text-white/90">{name}</div>
       <div className="mb-2 flex justify-end">
         <button
           onClick={() => setGridStyle('list')}

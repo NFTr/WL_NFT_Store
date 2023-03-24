@@ -2,27 +2,45 @@
 
 namespace App\Controller;
 
+use Psr\Container\ContainerExceptionInterface;
+use Psr\Container\NotFoundExceptionInterface;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\DependencyInjection\ParameterBag\ContainerBagInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
-use Symfony\Component\Yaml\Yaml;
 
 /**
  * @Route("/api/browseContent", name="api_browseContent")
  */
-class BrowseContentController
+class BrowseContentController extends AbstractController
 {
+    private ContainerBagInterface $params;
+
+    public function __construct(ContainerBagInterface $params)
+    {
+        $this->params = $params;
+    }
+
     /**
      * @Route("", name="config")
      */
-    public function index()
+    public function index(): Response
     {
-        $configFile = __DIR__.'/../../config/chia.yaml';
-
-        $configData = Yaml::parseFile($configFile);
-        $homeContent = $configData['parameters']['app.browse'];
-        $response = new JsonResponse();
-        $response->setData($homeContent);
-
-        return $response;
+        try {
+            $browseContent1 = $this->params->get('app.collections');
+            $browseContent2 = $this->params->get('app.profiles');
+            $responseData = [
+                'collections' => $browseContent1,
+                'profiles' => $browseContent2
+            ];
+            $response = new JsonResponse();
+            $response->setData($responseData);
+            return $response;
+        } catch (NotFoundExceptionInterface|ContainerExceptionInterface $e) {
+            $response = new Response();
+            $response->setStatusCode(500);
+            return $response;
+        }
     }
 }
