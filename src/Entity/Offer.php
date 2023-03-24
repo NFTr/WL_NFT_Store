@@ -3,6 +3,7 @@
 namespace App\Entity;
 
 use ApiPlatform\Metadata\ApiResource;
+use ApiPlatform\Metadata\Get;
 use ApiPlatform\Metadata\GetCollection;
 use ApiPlatform\Metadata\Link;
 use App\Repository\OfferRepository;
@@ -13,12 +14,20 @@ use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: OfferRepository::class)]
 #[ApiResource(
+    operations: [
+        new Get(),
+        new GetCollection()
+    ]
+)]
+#[ApiResource(
     uriTemplate: '/nfts/{id}/offers',
     operations: [new GetCollection()],
     uriVariables: [
         'id' => new Link(
             fromProperty: 'offers',
-            fromClass: Nft::class
+            toProperty: 'nfts',
+            fromClass: Nft::class,
+            toClass: Offer::class
         )
     ]
 )]
