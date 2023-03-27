@@ -9,8 +9,10 @@ use ApiPlatform\Metadata\Link;
 use App\Repository\NftRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
+use Doctrine\Common\Collections\Criteria;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Annotation\Groups;
 
 #[ORM\Entity(repositoryClass: NftRepository::class)]
 #[ApiResource(
@@ -27,7 +29,8 @@ use Doctrine\ORM\Mapping as ORM;
             fromProperty: 'nfts',
             fromClass: NftCollection::class
         )
-    ]
+    ],
+    normalizationContext: ['groups' => 'nft:collection:get']
 )]
 #[ApiResource(
     uriTemplate: '/dids/{id}/created_nfts',
@@ -37,7 +40,8 @@ use Doctrine\ORM\Mapping as ORM;
             fromProperty: 'createdNfts',
             fromClass: Did::class
         )
-    ]
+    ],
+    normalizationContext: ['groups' => 'nft:collection:get']
 )]
 #[ApiResource(
     uriTemplate: '/dids/{id}/owned_nfts',
@@ -47,18 +51,21 @@ use Doctrine\ORM\Mapping as ORM;
             fromProperty: 'ownedNfts',
             fromClass: Did::class
         )
-    ]
+    ],
+    normalizationContext: ['groups' => 'nft:collection:get']
 )]
 class Nft
 {
     #[ORM\Id]
     #[ORM\Column(length: 255)]
+    #[Groups('nft:collection:get')]
     private ?string $id = null;
 
     #[ORM\Column(length: 255)]
     private ?string $launcherId = null;
 
     #[ORM\Column(type: Types::TEXT, nullable: true)]
+    #[Groups('nft:collection:get')]
     private ?string $name = null;
 
     #[ORM\Column(type: Types::TEXT, nullable: true)]
@@ -110,6 +117,7 @@ class Nft
     private ?NftCollection $collection = null;
 
     #[ORM\Column(type: Types::TEXT, nullable: true)]
+    #[Groups('nft:collection:get')]
     private ?string $thumbnailUri = null;
 
     #[ORM\Column(type: Types::TEXT, nullable: true)]
@@ -430,5 +438,17 @@ class Nft
         }
 
         return $this;
+    }
+
+    #[Groups('nft:collection:get')]
+    public function getLowestSellOffer(): ?Offer
+    {
+        $criteria = Criteria::create()
+            ->orderBy(['xchPrice' => 'ASC'])
+            ->setMaxResults(1);
+
+        $result = $this->offers->filter(fn($offer) => $offer->getSide() == Offer::SIDE_OFFERED && $offer->getStatus() == 0)->matching($criteria);
+
+        return $result->isEmpty() ? null : $result->first();
     }
 }
