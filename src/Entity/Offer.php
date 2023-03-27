@@ -58,7 +58,6 @@ class Offer
     #[ORM\Column(type: Types::TEXT)]
     private ?string $offerstring = null;
 
-
     const SOURCE_DEXIE = 'dexie';
     const SOURCE_LOCAL = 'local';
 
@@ -67,6 +66,17 @@ class Offer
 
     #[ORM\ManyToMany(targetEntity: Nft::class, inversedBy: 'offers')]
     private Collection $nfts;
+
+    #[ORM\Column(nullable: true)]
+    #[Groups('nft:collection:get')]
+    private ?float $xchPrice = null;
+
+    const SIDE_OFFERED = 1;
+    const SIDE_REQUESTED = 2;
+
+    #[ORM\Column]
+    #[Groups('nft:collection:get')]
+    private ?int $side = null;
 
     public function __construct()
     {
@@ -195,4 +205,32 @@ class Offer
 
         return $this;
     }
+
+    public function getXchPrice(): ?float
+    {
+        return $this->xchPrice;
+    }
+
+    public function setXchPrice(?float $xchPrice): self
+    {
+        $this->xchPrice = $xchPrice;
+
+        return $this;
+    }
+
+    public function getSide(): ?int
+    {
+        return $this->side;
+    }
+
+    public function setSide(int $side): self
+    {
+        if (!in_array($side, array(self::SIDE_OFFERED, self::SIDE_REQUESTED))) {
+            throw new \InvalidArgumentException("Invalid side");
+        }
+        $this->side = $side;
+
+        return $this;
+    }
+
 }
