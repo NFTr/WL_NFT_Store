@@ -1,10 +1,10 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useParams } from 'react-router';
 import useSWR from 'swr';
 import { Collection } from '../../components/Collection';
 import { Container } from '../../components/Container';
 import { fetcher } from '../../utilities/fetcher';
-import { TwitterSvg, WebsiteSvg, Grid_G, Grid_K, List} from '../../components/SocialIcons'
+import { TwitterSvg, WebsiteSvg, Grid_G, Grid_K, List } from '../../components/SocialIcons';
 
 export const CollectionPage: React.FC = () => {
   const { id } = useParams();
@@ -17,7 +17,7 @@ export const CollectionPage: React.FC = () => {
     isLoading: isLoadingNfts,
   } = useSWR(`/api/collections/${id}/nfts`, fetcher);
 
-  const [gridStyle, setGridStyle] = React.useState('grid-compact');
+  const [gridStyle, setGridStyle] = useState('grid-compact');
 
   const getAttributeValue = (type: string): string | undefined => {
     return collection?.attributes.find((attributes: { type: string }) => attributes.type === type)?.value;
@@ -86,7 +86,7 @@ export const CollectionPage: React.FC = () => {
         <div className="mb-2 flex justify-end">
           <button
             onClick={() => setGridStyle('list')}
-            className="rounded py-2 px-4 hover:bg-slate-200 dark:hover:bg-gray-800"
+            className="rounded py-2 px-4 hover:bg-slate-200 active:bg-slate-600 dark:hover:bg-gray-800"
           >
             <List></List>
           </button>
