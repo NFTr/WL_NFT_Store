@@ -47,10 +47,10 @@ class Offer
     private array $requested = [];
 
     #[ORM\Column(type: Types::DATE_MUTABLE)]
-    private ?\DateTimeInterface $date_found = null;
+    private ?\DateTimeInterface $dateFound = null;
 
     #[ORM\Column(type: Types::DATE_MUTABLE, nullable: true)]
-    private ?\DateTimeInterface $date_completed = null;
+    private ?\DateTimeInterface $dateCompleted = null;
 
     #[ORM\Column(type: Types::TEXT)]
     private ?string $offerstring = null;
@@ -120,24 +120,24 @@ class Offer
 
     public function getDateFound(): ?\DateTimeInterface
     {
-        return $this->date_found;
+        return $this->dateFound;
     }
 
-    public function setDateFound(\DateTimeInterface $date_found): self
+    public function setDateFound(\DateTimeInterface $dateFound): self
     {
-        $this->date_found = $date_found;
+        $this->dateFound = $dateFound;
 
         return $this;
     }
 
     public function getDateCompleted(): ?\DateTimeInterface
     {
-        return $this->date_completed;
+        return $this->dateCompleted;
     }
 
-    public function setDateCompleted(?\DateTimeInterface $date_completed): self
+    public function setDateCompleted(?\DateTimeInterface $dateCompleted): self
     {
-        $this->date_completed = $date_completed;
+        $this->dateCompleted = $dateCompleted;
 
         return $this;
     }
