@@ -20,7 +20,7 @@ export const NftPage: React.FC = () => {
   };
 
   const { data: nft, error, isLoading } = useSWR<Nft>(`/api/nfts/${id}`, fetcher);
-  const { data: offers, error: offerError, isLoading: isLoadingOffer } = useSWR(`/api/nfts/${id}/offers`, fetcher);
+  const { data: offers, error: offerError, isLoading: isLoadingOffer } = useSWR(`/api/nfts/${id}/offers?status=0`, fetcher);
 
   function renderAttributes(attributes: any[]) {
     return (

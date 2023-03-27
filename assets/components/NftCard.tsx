@@ -5,7 +5,7 @@ import useSWR from 'swr';
 import { fetcher } from '../utilities/fetcher';
 
 export const NftCard: React.FC<{ nft: Nft; gridStyle: string }> = ({ nft, gridStyle }) => {
-  const { data: offers, error: offerError, isLoading: isLoadingOffer } = useSWR(`/api/nfts/${nft.id}/offers`, fetcher);
+  const { data: offers, error: offerError, isLoading: isLoadingOffer } = useSWR(`/api/nfts/${nft.id}/offers?status=0`, fetcher);
   if (gridStyle == 'list') {
     return (
       <Link

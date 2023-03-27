@@ -2,6 +2,8 @@
 
 namespace App\Entity;
 
+use ApiPlatform\Doctrine\Orm\Filter\NumericFilter;
+use ApiPlatform\Metadata\ApiFilter;
 use ApiPlatform\Metadata\ApiResource;
 use ApiPlatform\Metadata\Get;
 use ApiPlatform\Metadata\GetCollection;
@@ -31,6 +33,7 @@ use Doctrine\ORM\Mapping as ORM;
         )
     ]
 )]
+#[ApiFilter(NumericFilter::class, properties: ['status'])]
 class Offer
 {
     #[ORM\Id]
