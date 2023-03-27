@@ -50,8 +50,8 @@ export const NftPage: React.FC = () => {
   function renderDetails(nft: Nft) {
     return (
       <>
-        <div className="flex">
-          <div className="w-1/2">
+        <div className="grid grid-cols-1 lg:grid-cols-2">
+          <div className="">
             <h3 className="text-2xl font-bold">Details</h3>
             <div className="mt-4 flex flex-col gap-4">
               <div>
@@ -76,11 +76,11 @@ export const NftPage: React.FC = () => {
               </div>
             </div>
           </div>
-          <div className="w-1/2">
+          <div className="">
             <h3 className="text-2xl font-bold">Offers</h3>
             {offers ? (
               offers['hydra:member'].map((offer: any) => (
-                <div className="flex h-16 w-10/12 items-center rounded-lg border border-zinc-200 p-4 dark:border-zinc-600">
+                <div className="flex h-16 w-full items-center rounded-lg border border-zinc-200 p-4 dark:border-zinc-600">
                   <div className="flex items-center">
                     <img className="h-8" src="/chiaLogo.png" alt="Chia logo" />
                     <div className="ml-4 text-lg font-medium">{offer.requested[0].amount} XCH</div>
@@ -141,7 +141,7 @@ export const NftPage: React.FC = () => {
         </div>
         <div className="flex rounded-xl bg-white/90 p-6 font-medium text-zinc-800 shadow-lg shadow-zinc-800/5 ring-1 ring-zinc-900/5 backdrop-blur dark:bg-zinc-800/90 dark:text-zinc-200 dark:ring-white/10">
           {nft ? (
-            <div>
+            <div className="w-full">
               <h1 className="text-4xl font-semibold lg:text-5xl">{nft.name}</h1>
               <p className="mt-4 lg:mt-8">{nft.description}</p>
               <div className="mt-12">{renderDetails(nft)}</div>
