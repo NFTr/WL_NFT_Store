@@ -93,13 +93,11 @@ class DexieOfferAdapter implements OfferAdapter
         $offer = $this->convertAndUpdateOffer($offer, $offerToImport);
 
         if ($is_new) {
-            foreach (array_merge($offer->getRequested(), $offer->getOffered()) as $item) {
-                if (is_array($item) && str_starts_with($item['id'], 'nft1')) {
-                    $nft = $this->nftRepository->find($item['id']);
-                    if ($nft) {
-                        $offer->addNft($nft);
-                    }
-                }
+            foreach ($offer->getOffered() as $item) {
+                $this->addPriceAndNftRelationship(Offer::SIDE_OFFERED, $item, $offer);
+            }
+            foreach ($offer->getRequested() as $item) {
+                $this->addPriceAndNftRelationship(Offer::SIDE_REQUESTED, $item, $offer);
             }
         }
         $this->offerRepository->save($offer);
@@ -128,12 +126,29 @@ class DexieOfferAdapter implements OfferAdapter
 
     private function cleanUpOfferedRequested(array $offeredRequested): array
     {
-        $cleanup = function (mixed $value): mixed {
+        $cleanup = function (mixed $value): array {
             if (property_exists($value, 'is_nft')) {
                 return ['id' => $this->puzzleHashConverter->encodePuzzleHash($value->id, 'nft'), 'amount' => 1];
             }
-            return $value;
+            return (array) $value;
         };
         return array_map($cleanup, $offeredRequested);
+    }
+
+    /**
+     * @param mixed $item
+     * @param Offer $offer
+     */
+    private function addPriceAndNftRelationship(int $side, mixed $item, Offer $offer): void
+    {
+        if (str_starts_with($item['id'], 'nft1')) {
+            $offer->setSide($side);
+            $nft = $this->nftRepository->find($item['id']);
+            if ($nft) {
+                $offer->addNft($nft);
+            }
+        } else if ($item['id'] == 'xch') {
+            $offer->setXchPrice($item['amount']);
+        }
     }
 }
