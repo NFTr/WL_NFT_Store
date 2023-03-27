@@ -49,8 +49,8 @@ class DexieOfferAdapter implements OfferAdapter
     {
         $this->entityManager->getConnection()->getConfiguration()->setSQLLogger(null);
         $this->logger->info("Fetching offers from collection $collectionId");
-        $this->importAllOfferPages("$this->baseUrl/offers?offered=$collectionId&requested=xch&count=100");
-        $this->importAllOfferPages("$this->baseUrl/offers?offered=xch&requested=$collectionId&count=100");
+        $this->importAllOfferPages("$this->baseUrl/offers?offered=$collectionId&requested=xch&count=100&status=0&status=3&status=4");
+        $this->importAllOfferPages("$this->baseUrl/offers?offered=xch&requested=$collectionId&count=100&status=0&status=3&status=4");
     }
 
 
