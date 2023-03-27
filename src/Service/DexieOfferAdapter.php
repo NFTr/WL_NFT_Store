@@ -49,9 +49,24 @@ class DexieOfferAdapter implements OfferAdapter
     {
         $this->entityManager->getConnection()->getConfiguration()->setSQLLogger(null);
         $this->logger->info("Fetching offers from collection $collectionId");
+        $this->importAllOfferPages("$this->baseUrl/offers?offered=$collectionId&requested=xch&count=100");
+        $this->importAllOfferPages("$this->baseUrl/offers?offered=xch&requested=$collectionId&count=100");
+    }
+
+
+    /**
+     * @param string $url
+     * @return void
+     * @throws ClientExceptionInterface
+     * @throws RedirectionExceptionInterface
+     * @throws ServerExceptionInterface
+     * @throws TransportExceptionInterface
+     */
+    public function importAllOfferPages(string $url): void
+    {
         $page = 1;
         while (true) {
-            $response = $this->client->request('GET', "$this->baseUrl/offers?offered=$collectionId&requested=xch&page=$page&count=100");
+            $response = $this->client->request('GET', "$url&page=$page");
             $JsonResponse = json_decode($response->getContent());
             $offersToImport = $JsonResponse->offers;
             $page += 1;
@@ -59,22 +74,7 @@ class DexieOfferAdapter implements OfferAdapter
                 break;
             }
             foreach ($offersToImport as $offerToImport) {
-                $this->logger->info("Importing offer $offerToImport->id");
-                $offer = $this->offerRepository->find($offerToImport->id);
-
-                $offer = $this->convertAndUpdateOffer($offer, $offerToImport);
-
-                foreach (array_merge($offer->getRequested(), $offer->getOffered()) as $item) {
-                    if (is_array($item) && str_starts_with($item['id'], 'nft1')) {
-                        $nft = $this->nftRepository->find($item['id']);
-                        print_r($item['id']);
-                        if ($nft) {
-                            $offer->addNft($nft);
-                        }
-                    }
-                }
-
-                $this->offerRepository->save($offer);
+                $this->importOffer($offerToImport);
             }
             $this->entityManager->flush();
             $this->entityManager->clear();
@@ -84,15 +84,25 @@ class DexieOfferAdapter implements OfferAdapter
         }
     }
 
-    private function cleanUpOfferedRequested(array $offeredRequested): array
+    public function importOffer(mixed $offerToImport): void
     {
-        $cleanup = function (mixed $value): mixed {
-            if (property_exists($value, 'is_nft')) {
-                return ['id' => $this->puzzleHashConverter->encodePuzzleHash($value->id, 'nft'), 'amount' => 1];
+        $this->logger->info("Importing offer $offerToImport->id");
+        $offer = $this->offerRepository->find($offerToImport->id);
+        $is_new = $offer == null;
+
+        $offer = $this->convertAndUpdateOffer($offer, $offerToImport);
+
+        if ($is_new) {
+            foreach (array_merge($offer->getRequested(), $offer->getOffered()) as $item) {
+                if (is_array($item) && str_starts_with($item['id'], 'nft1')) {
+                    $nft = $this->nftRepository->find($item['id']);
+                    if ($nft) {
+                        $offer->addNft($nft);
+                    }
+                }
             }
-            return $value;
-        };
-        return array_map($cleanup, $offeredRequested);
+        }
+        $this->offerRepository->save($offer);
     }
 
     private function convertAndUpdateOffer(?Offer $offer, mixed $offerToImport): Offer
@@ -114,5 +124,16 @@ class DexieOfferAdapter implements OfferAdapter
         }
 
         return $offer;
+    }
+
+    private function cleanUpOfferedRequested(array $offeredRequested): array
+    {
+        $cleanup = function (mixed $value): mixed {
+            if (property_exists($value, 'is_nft')) {
+                return ['id' => $this->puzzleHashConverter->encodePuzzleHash($value->id, 'nft'), 'amount' => 1];
+            }
+            return $value;
+        };
+        return array_map($cleanup, $offeredRequested);
     }
 }
