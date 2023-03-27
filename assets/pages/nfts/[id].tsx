@@ -15,7 +15,12 @@ export const NftPage: React.FC = () => {
     setIsZoomedIn(!isZoomedIn);
   };
 
+  const getAttributeValue = (type: string): string => {
+    return nft?.attributes.find((attributes: { type: string }) => attributes.type === type)?.value;
+  };
+
   const { data: nft, error, isLoading } = useSWR<Nft>(`/api/nfts/${id}`, fetcher);
+  const { data: offers, error: offerError, isLoading: isLoadingOffer } = useSWR(`/api/nfts/${id}/offers`, fetcher);
 
   function renderAttributes(attributes: any[]) {
     return (
@@ -45,27 +50,60 @@ export const NftPage: React.FC = () => {
   function renderDetails(nft: Nft) {
     return (
       <>
-        <h3 className="text-2xl font-bold">Details</h3>
-        <div className="mt-4 flex flex-col gap-4">
-          <div>
-            <a
-              className="flex items-center gap-2 text-sm font-medium text-gray-700 hover:text-gray-900 dark:text-zinc-100 dark:hover:text-zinc-300"
-              href={`https://www.spacescan.io/xch/nft/${nft.id}`}
-              target="_blank"
-            >
-              <img className="h-6 w-6 rounded-full" src="/spacescan.ico" />
-              Inspect on spacescan.io
-            </a>
+        <div className="flex">
+          <div className="w-1/2">
+            <h3 className="text-2xl font-bold">Details</h3>
+            <div className="mt-4 flex flex-col gap-4">
+              <div>
+                <a
+                  className="flex items-center gap-2 text-sm font-medium text-gray-700 hover:text-gray-900 dark:text-zinc-100 dark:hover:text-zinc-300"
+                  href={`https://www.spacescan.io/xch/nft/${nft.id}`}
+                  target="_blank"
+                >
+                  <img className="h-6 w-6 rounded-full" src="/spacescan.ico" />
+                  Inspect on spacescan.io
+                </a>
+              </div>
+              <div>
+                <a
+                  className="flex items-center gap-2 text-sm font-medium text-gray-700 hover:text-gray-900 dark:text-zinc-100 dark:hover:text-zinc-300"
+                  href={nft.dataUris[0]}
+                  target="_blank"
+                >
+                  <EyeIcon className="h-6 w-6 rounded-full" />
+                  Open original
+                </a>
+              </div>
+            </div>
           </div>
-          <div>
-            <a
-              className="flex items-center gap-2 text-sm font-medium text-gray-700 hover:text-gray-900 dark:text-zinc-100 dark:hover:text-zinc-300"
-              href={nft.dataUris[0]}
-              target="_blank"
-            >
-              <EyeIcon className="h-6 w-6 rounded-full" />
-              Open original
-            </a>
+          <div className="w-1/2">
+            <h3 className="text-2xl font-bold">Offers</h3>
+            {offers ? (
+              offers['hydra:member'].map((offer: any) => (
+                <div className="flex h-16 w-10/12 items-center rounded-lg border border-zinc-200 p-4 dark:border-zinc-600">
+                  <div className="flex items-center">
+                    <img className="h-8" src="/chiaLogo.png" alt="Chia logo" />
+                    <div className="ml-4 text-lg font-medium">{offer.requested[0].amount} XCH</div>
+                  </div>
+                  <div className="ml-4 flex items-center">
+                    <div className="text-lg font-medium">@</div>
+                    <a className="flex items-center" href={`https://dexie.space/offers/${offer.id}`}>
+                      <img className="ml-4 h-10" src="/dexie_duck.svg" alt="Dexie logo" />
+                      <div className="ml-4">
+                        <div className="text-lg font-medium">dexie.space</div>
+                        <div className="text-sm text-gray-500">
+                          on {new Date(offer.dateFound).getDate()}.{' '}
+                          {new Date(offer.dateFound).toLocaleString('default', { month: 'long' })}{' '}
+                          {new Date(offer.dateFound).getFullYear()}
+                        </div>
+                      </div>
+                    </a>
+                  </div>
+                </div>
+              ))
+            ) : (
+              <div>Loading Offers</div>
+            )}
           </div>
         </div>
       </>
