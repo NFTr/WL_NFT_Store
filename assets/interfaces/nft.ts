@@ -21,4 +21,5 @@ export interface Nft {
   collection?: string;
   thumbnailUri?: string;
   previewUri?: string;
+  lowestSellOffer?: any;
 }

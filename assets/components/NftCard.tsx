@@ -1,11 +1,8 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { Nft } from '../interfaces/nft';
-import useSWR from 'swr';
-import { fetcher } from '../utilities/fetcher';
 
 export const NftCard: React.FC<{ nft: Nft; gridStyle: string }> = ({ nft, gridStyle }) => {
-  const { data: offers, error: offerError, isLoading: isLoadingOffer } = useSWR(`/api/nfts/${nft.id}/offers?status=0`, fetcher);
   if (gridStyle == 'list') {
     return (
       <Link
@@ -19,13 +16,11 @@ export const NftCard: React.FC<{ nft: Nft; gridStyle: string }> = ({ nft, gridSt
           <div className="text-lg font-bold">{nft.name}</div>
         </div>
         <div className="">
-          {offers ? (
-            offers['hydra:member'].map((offer: any) => (
-              <div className="flex items-center">
-                <img className="h-8" src="/chiaLogo.png" alt="Chia logo" />
-                <div>{offer.requested[0].amount} XCH</div>
-              </div>
-            ))
+          {nft.lowestSellOffer ? (
+            <div className="flex items-center">
+              <img className="h-8" src="/chiaLogo.png" alt="Chia logo" />
+              <div>{nft.lowestSellOffer.xchPrice} XCH</div>
+            </div>
           ) : (
             <div></div>
           )}
@@ -59,13 +54,11 @@ export const NftCard: React.FC<{ nft: Nft; gridStyle: string }> = ({ nft, gridSt
         <div className="flex w-full justify-between px-3 py-4">
           <div className="text-lg font-bold">{nft.name}</div>
           <div className="">
-            {offers ? (
-              offers['hydra:member'].map((offer: any) => (
-                <div className="flex items-center">
-                  <img className="h-8" src="/chiaLogo.png" alt="Chia logo" />
-                  <div>{offer.requested[0].amount} XCH</div>
-                </div>
-              ))
+            {nft.lowestSellOffer ? (
+              <div className="flex items-center">
+                <img className="h-8" src="/chiaLogo.png" alt="Chia logo" />
+                <div>{nft.lowestSellOffer.xchPrice} XCH</div>
+              </div>
             ) : (
               <div></div>
             )}
