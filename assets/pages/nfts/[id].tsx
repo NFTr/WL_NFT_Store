@@ -20,7 +20,12 @@ export const NftPage: React.FC = () => {
   };
 
   const { data: nft, error, isLoading } = useSWR<Nft>(`/api/nfts/${id}`, fetcher);
-  const { data: offers, error: offerError, isLoading: isLoadingOffer } = useSWR(`/api/nfts/${id}/offers?status=0`, fetcher);
+  const {
+    data: offers,
+    error: offerError,
+    isLoading: isLoadingOffer,
+  } = useSWR(`/api/nfts/${id}/offers?status=0`, fetcher);
+  console.log(offers);
 
   function renderAttributes(attributes: any[]) {
     return (
@@ -76,31 +81,64 @@ export const NftPage: React.FC = () => {
               </div>
             </div>
           </div>
-          <div className="">
-            <h3 className="text-2xl font-bold">Offers</h3>
+          <div>
+            <h3 className="mb-2 mt-8 text-2xl font-bold lg:mt-0">Listings</h3>
             {offers ? (
-              offers['hydra:member'].map((offer: any) => (
-                <div className="flex h-16 w-full items-center rounded-lg border border-zinc-200 p-4 dark:border-zinc-600">
-                  <div className="flex items-center">
-                    <img className="h-8" src="/chiaLogo.png" alt="Chia logo" />
-                    <div className="ml-4 text-lg font-medium">{offer.requested[0].amount} XCH</div>
-                  </div>
-                  <div className="ml-4 flex items-center">
-                    <div className="text-lg font-medium">@</div>
-                    <a className="flex items-center" href={`https://dexie.space/offers/${offer.id}`}>
-                      <img className="ml-4 h-10" src="/dexie_duck.svg" alt="Dexie logo" />
-                      <div className="ml-4">
-                        <div className="text-lg font-medium">dexie.space</div>
-                        <div className="text-sm text-gray-500">
-                          on {new Date(offer.dateFound).getDate()}.{' '}
-                          {new Date(offer.dateFound).toLocaleString('default', { month: 'long' })}{' '}
-                          {new Date(offer.dateFound).getFullYear()}
+              offers['hydra:member']
+                .filter((offer: any) => offer.requested[0].id === 'xch')
+                .map((offer: any) => (
+                  <div className="mb-4 flex h-16 w-full items-center rounded-lg border border-zinc-200 p-4 dark:border-zinc-600">
+                    <div className="flex items-center">
+                      <img className="h-8" src="/chiaLogo.png" alt="Chia logo" />
+                      <div className="ml-4 text-lg font-medium">{offer.requested[0].amount} XCH</div>
+                      {offer.offered.id}
+                    </div>
+                    <div className="ml-4 flex items-center">
+                      <div className="text-lg font-medium">@</div>
+                      <a className="flex items-center" href={`https://dexie.space/offers/${offer.id}`}>
+                        <img className="ml-4 h-10" src="/dexie_duck.svg" alt="Dexie logo" />
+                        <div className="ml-4">
+                          <div className="text-lg font-medium">dexie.space</div>
+                          <div className="text-sm text-gray-500">
+                            on {new Date(offer.dateFound).getDate()}.{' '}
+                            {new Date(offer.dateFound).toLocaleString('default', { month: 'long' })}{' '}
+                            {new Date(offer.dateFound).getFullYear()}
+                          </div>
                         </div>
-                      </div>
-                    </a>
+                      </a>
+                    </div>
                   </div>
-                </div>
-              ))
+                ))
+            ) : (
+              <div>Loading Offers</div>
+            )}
+
+            <h3 className="mb-2 mt-8 text-2xl font-bold">Bids</h3>
+            {offers ? (
+              offers['hydra:member']
+                .filter((offer: any) => offer.offered[0].id === 'xch')
+                .map((offer: any) => (
+                  <div className="mb-4 flex h-16 w-full items-center rounded-lg border border-zinc-200 p-4 dark:border-zinc-600">
+                    <div className="flex items-center">
+                      <img className="h-8" src="/chiaLogo.png" alt="Chia logo" />
+                      <div className="ml-4 text-lg font-medium">{offer.offered[0].amount} XCH</div>
+                    </div>
+                    <div className="ml-4 flex items-center">
+                      <div className="text-lg font-medium">@</div>
+                      <a className="flex items-center" href={`https://dexie.space/offers/${offer.id}`}>
+                        <img className="ml-4 h-10" src="/dexie_duck.svg" alt="Dexie logo" />
+                        <div className="ml-4">
+                          <div className="text-lg font-medium">dexie.space</div>
+                          <div className="text-sm text-gray-500">
+                            on {new Date(offer.dateFound).getDate()}.{' '}
+                            {new Date(offer.dateFound).toLocaleString('default', { month: 'long' })}{' '}
+                            {new Date(offer.dateFound).getFullYear()}
+                          </div>
+                        </div>
+                      </a>
+                    </div>
+                  </div>
+                ))
             ) : (
               <div>Loading Offers</div>
             )}
