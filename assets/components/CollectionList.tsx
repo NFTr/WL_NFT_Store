@@ -2,7 +2,12 @@ import React from 'react';
 import { Collection } from '../interfaces/Collection';
 import { CollectionCard } from './CollectionCard';
 
-export const CollectionList: React.FC<{ collections: any; gridStyle: string }> = ({ collections, gridStyle }) => {
+export const CollectionList: React.FC<{ collections: any; gridStyle: string; limit?: number }> = ({
+  collections,
+  gridStyle,
+  limit,
+}) => {
+  const collectionsToDisplay = limit ? collections['hydra:member'].slice(0, limit) : collections['hydra:member'];
   if (gridStyle === 'grid-compact') {
     return (
       <div className="grid grid-cols-2 gap-x-6 gap-y-8 lg:grid-cols-3">
