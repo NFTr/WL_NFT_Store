@@ -82,7 +82,9 @@ export const NftPage: React.FC = () => {
             </div>
           </div>
           <div>
-            <h3 className="mb-2 mt-8 text-2xl font-bold lg:mt-0">Listings</h3>
+            {offers && offers['hydra:member'].length > 0 ? (
+              <h3 className="mb-2 mt-8 text-2xl font-bold lg:mt-0">Listings</h3>
+            ) : null}
             {offers ? (
               offers['hydra:member']
                 .filter((offer: any) => offer.requested[0].id === 'xch')
@@ -112,8 +114,9 @@ export const NftPage: React.FC = () => {
             ) : (
               <div>Loading Offers</div>
             )}
-
-            <h3 className="mb-2 mt-8 text-2xl font-bold">Bids</h3>
+            {offers && offers['hydra:member'].length > 0 ? (
+              <h3 className="mb-2 mt-8 text-2xl font-bold">Bids</h3>
+            ) : null}
             {offers ? (
               offers['hydra:member']
                 .filter((offer: any) => offer.offered[0].id === 'xch')
