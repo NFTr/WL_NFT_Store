@@ -1,6 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { Container } from '../components/Container';
+import { Searchbar } from '../components/Searchbar';
 
 export const About: React.FC = () => (
   <>
@@ -9,6 +10,7 @@ export const About: React.FC = () => (
       <Link className="text-zinc-800 dark:text-zinc-100" to="/">
         Go back{' '}
       </Link>
+      <Searchbar />
     </Container>
   </>
 );

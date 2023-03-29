@@ -11,6 +11,9 @@ use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation\Groups;
+use ApiPlatform\Metadata\ApiFilter;
+use ApiPlatform\Doctrine\Orm\Filter\SearchFilter;
+use App\Filter\MultipleFieldsSearchFilter;
 
 #[ORM\Entity(repositoryClass: NftCollectionRepository::class)]
 #[ApiResource(
@@ -21,6 +24,9 @@ use Symfony\Component\Serializer\Annotation\Groups;
     ],
     normalizationContext: ['groups' => ['get']]
 )]
+#[ApiFilter(MultipleFieldsSearchFilter::class, properties: [
+    'id' => 'exact', 'name' => 'partial'])]
+
 class NftCollection
 {
     #[ORM\Id]

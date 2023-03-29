@@ -10,6 +10,9 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use ApiPlatform\Metadata\ApiFilter;
+use ApiPlatform\Doctrine\Orm\Filter\SearchFilter;
+use App\Filter\MultipleFieldsSearchFilter;
 
 #[ORM\Entity(repositoryClass: DidRepository::class)]
 #[ApiResource(
@@ -18,6 +21,9 @@ use Doctrine\ORM\Mapping as ORM;
         new GetCollection()
     ]
 )]
+#[ApiFilter(MultipleFieldsSearchFilter::class, properties: [
+    'id' => 'exact', 'name' => 'partial', 'encodedId' => 'exact'])]
+
 class Did
 {
     #[ORM\Id]
