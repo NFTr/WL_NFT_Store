@@ -33,10 +33,10 @@ export const NftCard: React.FC<{ nft: Nft; gridStyle: string }> = ({ nft, gridSt
         to={`/nfts/${nft.id}`}
         className="flex flex-col items-center rounded-xl bg-white/90 text-zinc-800 shadow-lg shadow-zinc-800/5 ring-1 ring-zinc-900/5  backdrop-blur dark:bg-zinc-800/90 dark:text-zinc-200 dark:ring-white/10"
       >
-        <div>
+        <div className="group">
           <div></div>
           <img className="h-40 w-40 rounded-xl object-cover" src={nft.thumbnailUri} />
-          <div className="absolute bottom-0 w-full rounded-b-xl bg-white/70 transition-all duration-200 hover:bg-white/90 hover:py-2 hover:text-xl">
+          <div className="absolute bottom-0 w-full rounded-b-xl bg-white/70 text-xl transition-all duration-200 group-hover:bg-white/90 group-hover:py-2 group-hover:text-2xl dark:bg-zinc-800/70 dark:text-zinc-200 dark:group-hover:bg-zinc-800/90">
             <div className="text-center text-xs font-bold">{nft.name}</div>
           </div>
         </div>
