@@ -2,7 +2,42 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { Nft } from '../interfaces/nft';
 
-export const NftCard: React.FC<{ nft: Nft; gridStyle: string }> = ({ nft, gridStyle }) => {
+const NftSkeleton: React.FC<{ gridStyle: string }> = ({ gridStyle }) => {
+  if (gridStyle === 'list') {
+    return (
+      <div className="h-42 flex animate-pulse items-center rounded-xl bg-white/90 text-zinc-800 shadow-lg shadow-zinc-800/5 ring-1 ring-zinc-900/5 backdrop-blur dark:bg-zinc-800/90 dark:text-zinc-200 dark:ring-white/10">
+        <div className="m-2 h-40 w-40 rounded-xl bg-gray-300"></div>
+        <div className="px-5">
+          <div className="h-4 w-40 rounded bg-gray-300"></div>
+        </div>
+        <div className="h-8 w-32 rounded bg-gray-300"></div>
+      </div>
+    );
+  } else if (gridStyle === 'grid') {
+    return (
+      <div className="flex animate-pulse flex-col items-center rounded-xl bg-white/90 text-zinc-800 shadow-lg shadow-zinc-800/5 ring-1 ring-zinc-900/5 backdrop-blur dark:bg-zinc-800/90 dark:text-zinc-200 dark:ring-white/10">
+        <div className="h-40 w-40 rounded-xl bg-gray-300"></div>
+        <div className="mt-2 h-4 w-40 rounded bg-gray-300"></div>
+      </div>
+    );
+  } else {
+    return (
+      <div className="flex animate-pulse flex-col items-center rounded-xl bg-white/90 text-zinc-800 shadow-lg shadow-zinc-800/5 ring-1 ring-zinc-900/5 backdrop-blur dark:bg-zinc-800/90 dark:text-zinc-200 dark:ring-white/10">
+        <div className="h-40 w-full rounded-t-xl bg-gray-300"></div>
+        <div className="flex w-full justify-between px-3 py-4">
+          <div className="h-4 w-40 rounded bg-gray-300"></div>
+          <div className="h-8 w-32 rounded bg-gray-300"></div>
+        </div>
+      </div>
+    );
+  }
+};
+
+export const NftCard: React.FC<{ nft?: Nft; gridStyle: string }> = ({ nft, gridStyle }) => {
+  if (!nft) {
+    return <NftSkeleton gridStyle={gridStyle} />;
+  }
+
   if (gridStyle == 'list') {
     return (
       <Link
