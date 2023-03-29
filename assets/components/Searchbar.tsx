@@ -1,17 +1,14 @@
 import React, { useState } from 'react';
-import useSWR from 'swr';
+import { useSearch } from '../hooks/api';
 import { Collection } from './Collection';
 import { CollectionList } from './CollectionList';
-import { List, Grid_K, Grid_G, SearchSVG } from './SocialIcons';
+import { Grid_G, Grid_K, List, SearchSVG } from './SocialIcons';
 
 export const Searchbar: React.FC = () => {
   const fetcher = (url: string) => fetch(url).then((res) => res.json());
   const [searchTerm, setSearchTerm] = useState('');
-  const { data: searchNfts, isLoading: isLoadingNfts } = useSWR(`/api/nfts?search=${searchTerm}`, fetcher);
-  const { data: searchCollections, isLoading: isLoadingCollections } = useSWR(
-    `/api/collections?search=${searchTerm}`,
-    fetcher
-  );
+  const { nfts, collections, isLoading } = useSearch(searchTerm);
+
   //   const { data: searchDids, isLoading: isLoadingDids } = useSWR(`/api/dids?search=${searchTerm}`, fetcher);
   const [gridStyle, setGridStyle] = React.useState('grid-compact');
   const [numResultsNFTs, setNumResultsNFTs] = useState(6);
@@ -71,56 +68,44 @@ export const Searchbar: React.FC = () => {
             </div>
 
             <div>
-              {isLoadingNfts ? (
-                <div>Loading...</div>
-              ) : (
-                <>
-                  {searchNfts['hydra:member'].length > 0 && (
-                    <div className="">
-                      <div className="mb-4 text-2xl font-bold text-zinc-800 dark:text-zinc-200">Found NFTs</div>
-                      <Collection collectionNfts={searchNfts} gridStyle={gridStyle} limit={numResultsNFTs} />
-                      {searchNfts['hydra:member'].length > numResultsNFTs ? (
-                        <button
-                          onClick={handleShowMoreNFTs}
-                          className="mx-auto mt-6 flex justify-center rounded-full bg-white/90 px-5 py-2 text-lg font-bold text-zinc-800 shadow-md shadow-zinc-800/5 ring-1 ring-zinc-900/5 dark:bg-zinc-800/90 dark:text-zinc-200 dark:ring-white/10"
-                        >
-                          Show more
-                        </button>
-                      ) : (
-                        <div>{}</div>
-                      )}
+              <>
+                {nfts?.length > 0 && (
+                  <div className="">
+                    <div className="mb-4 text-2xl font-bold text-zinc-800 dark:text-zinc-200">Found NFTs</div>
+                    <Collection collectionNfts={nfts} gridStyle={gridStyle} limit={numResultsNFTs} />
+                    {nfts.length > numResultsNFTs ? (
+                      <button
+                        onClick={handleShowMoreNFTs}
+                        className="mx-auto mt-6 flex justify-center rounded-full bg-white/90 px-5 py-2 text-lg font-bold text-zinc-800 shadow-md shadow-zinc-800/5 ring-1 ring-zinc-900/5 dark:bg-zinc-800/90 dark:text-zinc-200 dark:ring-white/10"
+                      >
+                        Show more
+                      </button>
+                    ) : (
+                      <div>{}</div>
+                    )}
+                  </div>
+                )}
+              </>
+              <>
+                {collections?.length > 0 && (
+                  <div>
+                    <div className="mb-4 mt-8 text-2xl font-bold text-zinc-800 dark:text-zinc-200">
+                      Found Collections
                     </div>
-                  )}
-                </>
-              )}
-              {isLoadingCollections ? (
-                <div>Loading...</div>
-              ) : (
-                <>
-                  {searchCollections['hydra:member'].length > 0 && (
-                    <div>
-                      <div className="mb-4 mt-8 text-2xl font-bold text-zinc-800 dark:text-zinc-200">
-                        Found Collections
-                      </div>
-                      <CollectionList
-                        collections={searchCollections}
-                        gridStyle={gridStyle}
-                        limit={numResultsCollections}
-                      />
-                      {searchCollections['hydra:member'].length > numResultsCollections ? (
-                        <button
-                          onClick={handleShowMoreCollections}
-                          className="mx-auto mt-6 flex justify-center rounded-full bg-white/90 px-5 py-2 text-lg font-bold text-zinc-800 shadow-md shadow-zinc-800/5 ring-1 ring-zinc-900/5 dark:bg-zinc-800/90 dark:text-zinc-200 dark:ring-white/10"
-                        >
-                          Show More
-                        </button>
-                      ) : (
-                        <div>{}</div>
-                      )}
-                    </div>
-                  )}
-                </>
-              )}
+                    <CollectionList collections={collections} gridStyle={gridStyle} limit={numResultsCollections} />
+                    {collections.length > numResultsCollections ? (
+                      <button
+                        onClick={handleShowMoreCollections}
+                        className="mx-auto mt-6 flex justify-center rounded-full bg-white/90 px-5 py-2 text-lg font-bold text-zinc-800 shadow-md shadow-zinc-800/5 ring-1 ring-zinc-900/5 dark:bg-zinc-800/90 dark:text-zinc-200 dark:ring-white/10"
+                      >
+                        Show More
+                      </button>
+                    ) : (
+                      <div>{}</div>
+                    )}
+                  </div>
+                )}
+              </>
             </div>
           </div>
         )}

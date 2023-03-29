@@ -49,3 +49,21 @@ export function useProfile(didId: string) {
     isLoading: false,
   };
 }
+
+export function useSearch(searchTerm: string) {
+  const { data: nfts, isLoading: isLoadingNfts, error: errorNfts } = useSWR(`/api/nfts?search=${searchTerm}`, fetcher);
+  const {
+    data: collections,
+    isLoading: isLoadingCollections,
+    error: errorCollections,
+  } = useSWR(`/api/collections?search=${searchTerm}`, fetcher);
+
+  if (isLoadingNfts || isLoadingCollections) {
+    return { isLoading: true };
+  }
+
+  if (errorNfts || errorCollections) {
+    return { isLoading: false, error: errorNfts || errorCollections };
+  }
+  return { nfts: nfts['hydra:member'], collections: collections['hydra:member'], error: undefined, isLoading: false };
+}

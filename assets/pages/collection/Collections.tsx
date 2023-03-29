@@ -6,11 +6,10 @@ import { fetcher } from '../../utilities/fetcher';
 import { TwitterSvg, WebsiteSvg, Grid_G, Grid_K, List} from '../../components/SocialIcons'
 
 export const Collections: React.FC = () => {
-  const { data: collection, error, isLoading } = useSWR(`/api/collections`, fetcher);
+  const { data: collections, error, isLoading } = useSWR(`/api/collections`, fetcher);
 
   const [gridStyle, setGridStyle] = React.useState('grid-compact');
 
-  const renderHeader = () => (isLoading ? <div>Loading...</div> : <div>{collection.name}</div>);
   const renderGallery = () =>
     isLoading ? (
       <div>Loading...</div>
@@ -36,7 +35,7 @@ export const Collections: React.FC = () => {
             <Grid_G></Grid_G>
           </button>
         </div>
-        <CollectionList collections={collection} gridStyle={gridStyle} />
+        <CollectionList collections={collections['hydra:member']} gridStyle={gridStyle} />
       </div>
     );
   return (
