@@ -13,6 +13,7 @@ use Doctrine\ORM\Mapping as ORM;
 use ApiPlatform\Metadata\ApiFilter;
 use ApiPlatform\Doctrine\Orm\Filter\SearchFilter;
 use App\Filter\MultipleFieldsSearchFilter;
+use ApiPlatform\Doctrine\Orm\Filter\OrderFilter;
 
 #[ORM\Entity(repositoryClass: DidRepository::class)]
 #[ApiResource(
@@ -23,6 +24,7 @@ use App\Filter\MultipleFieldsSearchFilter;
 )]
 #[ApiFilter(MultipleFieldsSearchFilter::class, properties: [
     'id' => 'exact', 'name' => 'partial', 'encodedId' => 'exact'])]
+#[ApiFilter(OrderFilter::class, properties: ['id', 'name', 'encodedId'], arguments: ['orderParameterName' => 'order'])]
 
 class Did
 {

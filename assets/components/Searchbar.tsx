@@ -1,21 +1,29 @@
-import React, { useState } from 'react';
-import { useSearch } from '../hooks/api';
+import React, { Fragment, useState } from 'react';
+import useSWR from 'swr';
 import { Collection } from './Collection';
 import { CollectionList } from './CollectionList';
-import { Grid_G, Grid_K, List, SearchSVG } from './SocialIcons';
+import { List, Grid_K, Grid_G, SearchSVG, DropdownSVG } from './SocialIcons';
+import { Menu, Transition } from '@headlessui/react';
+import { useSearch } from '../hooks/api';
 
 export const Searchbar: React.FC = () => {
   const fetcher = (url: string) => fetch(url).then((res) => res.json());
   const [searchTerm, setSearchTerm] = useState('');
-  const { nfts, collections, isLoading } = useSearch(searchTerm);
 
+  const { nfts, collections, isLoading } = useSearch(searchTerm);
+  const [orderTerm, setOrderTerm] = useState('');
   //   const { data: searchDids, isLoading: isLoadingDids } = useSWR(`/api/dids?search=${searchTerm}`, fetcher);
   const [gridStyle, setGridStyle] = React.useState('grid-compact');
   const [numResultsNFTs, setNumResultsNFTs] = useState(6);
   const [numResultsCollections, setNumResultsCollections] = useState(6);
+  const [isOpen, setIsOpen] = useState(false);
 
   const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setSearchTerm(event.target.value);
+  };
+
+  const orderIdAsc = () => {
+    setOrderTerm('&order%5Bid%5D=asc');
   };
 
   const handleShowMoreNFTs = () => {
@@ -24,6 +32,14 @@ export const Searchbar: React.FC = () => {
   const handleShowMoreCollections = () => {
     setNumResultsCollections((prevNumResults) => prevNumResults + 9);
   };
+  const orders = [
+    { set: () => setOrderTerm('&order%5Bid%5D=asc'), label: 'ID ascending' },
+    { set: () => setOrderTerm('&order%5Bid%5D=desc'), label: 'ID descending' },
+    { set: () => setOrderTerm('&order%5Bname%5D=asc'), label: 'Name ascending' },
+    { set: () => setOrderTerm('&order%5Bname%5D=desc'), label: 'Name descending' },
+    { set: orderIdAsc, label: 'Price ascending' },
+    { set: orderIdAsc, label: 'Price descending' },
+  ];
 
   return (
     <div>
@@ -45,28 +61,83 @@ export const Searchbar: React.FC = () => {
         ) : (
           <div>
             <div>
-              <div className="mb-2 flex justify-end">
-                <button
-                  onClick={() => setGridStyle('list')}
-                  className="rounded py-2 px-4 hover:bg-slate-200 dark:hover:bg-gray-800"
-                >
-                  <List></List>
-                </button>
-                <button
-                  onClick={() => setGridStyle('grid-compact')}
-                  className="rounded py-2 px-4 hover:bg-slate-200 dark:hover:bg-gray-800"
-                >
-                  <Grid_K></Grid_K>
-                </button>
-                <button
-                  onClick={() => setGridStyle('grid')}
-                  className="rounded py-2 px-4 hover:bg-slate-200 dark:hover:bg-gray-800"
-                >
-                  <Grid_G></Grid_G>
-                </button>
+              <div className="mt-6 mb-2 flex items-start justify-between">
+                <div>
+                  <Menu>
+                    {({ open }) => (
+                      <>
+                        <Menu.Button
+                          className="flex items-center rounded-lg bg-white/90 py-2 pl-5 text-lg font-bold text-zinc-800 shadow-md shadow-zinc-800/5 ring-1 ring-zinc-900/5 dark:bg-zinc-800/90 dark:text-zinc-200 dark:ring-white/10"
+                          onClick={() => setIsOpen(!isOpen)}
+                        >
+                          Order
+                          <div
+                            className={
+                              open
+                                ? 'rotate-180 px-3 transition-transform duration-300 ease-in-out'
+                                : 'px-3 transition-transform duration-300 ease-in-out'
+                            }
+                          >
+                            <DropdownSVG></DropdownSVG>
+                          </div>
+                        </Menu.Button>
+                        <Transition
+                          show={isOpen}
+                          enter="transition duration-200 ease-out"
+                          enterFrom="transform scale-95 opacity-0"
+                          enterTo="transform scale-100 opacity-100"
+                          leave="transition duration-75 ease-out"
+                          leaveFrom="transform scale-100 opacity-100"
+                          leaveTo="transform scale-95 opacity-0"
+                        >
+                          <div className="mt-3 flex w-fit rounded-md bg-white/90 px-5 shadow-lg shadow-zinc-800/5 ring-1 ring-zinc-900/5 dark:bg-zinc-800/90 dark:ring-white/10 ">
+                            <Menu.Items>
+                              {orders.map((order) => (
+                                <Menu.Item key={order.label} as={Fragment}>
+                                  {({ active }) => (
+                                    <div
+                                      onClick={order.set}
+                                      className={`${
+                                        active
+                                          ? 'text-zinc-800 dark:text-zinc-200'
+                                          : ' text-zinc-500 dark:text-zinc-400'
+                                      }  py-2 text-lg  font-bold `}
+                                    >
+                                      {order.label}
+                                    </div>
+                                  )}
+                                </Menu.Item>
+                              ))}
+                            </Menu.Items>
+                          </div>
+                        </Transition>
+                      </>
+                    )}
+                  </Menu>
+                </div>
+
+                <div className="">
+                  <button
+                    onClick={() => setGridStyle('list')}
+                    className="rounded py-2 px-4 hover:bg-slate-200 dark:hover:bg-gray-800"
+                  >
+                    <List></List>
+                  </button>
+                  <button
+                    onClick={() => setGridStyle('grid-compact')}
+                    className="rounded py-2 px-4 hover:bg-slate-200 dark:hover:bg-gray-800"
+                  >
+                    <Grid_K></Grid_K>
+                  </button>
+                  <button
+                    onClick={() => setGridStyle('grid')}
+                    className="rounded py-2 px-4 hover:bg-slate-200 dark:hover:bg-gray-800"
+                  >
+                    <Grid_G></Grid_G>
+                  </button>
+                </div>
               </div>
             </div>
-
             <div>
               <>
                 {nfts?.length > 0 && (

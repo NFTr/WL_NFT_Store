@@ -14,6 +14,7 @@ use Symfony\Component\Serializer\Annotation\Groups;
 use ApiPlatform\Metadata\ApiFilter;
 use ApiPlatform\Doctrine\Orm\Filter\SearchFilter;
 use App\Filter\MultipleFieldsSearchFilter;
+use ApiPlatform\Doctrine\Orm\Filter\OrderFilter;
 
 #[ORM\Entity(repositoryClass: NftCollectionRepository::class)]
 #[ApiResource(
@@ -26,6 +27,7 @@ use App\Filter\MultipleFieldsSearchFilter;
 )]
 #[ApiFilter(MultipleFieldsSearchFilter::class, properties: [
     'id' => 'exact', 'name' => 'partial'])]
+#[ApiFilter(OrderFilter::class, properties: ['id', 'name'], arguments: ['orderParameterName' => 'order'])]
 
 class NftCollection
 {
