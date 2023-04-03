@@ -2,28 +2,26 @@
 
 namespace App\Entity;
 
+use ApiPlatform\Doctrine\Common\Filter\OrderFilterInterface;
+use ApiPlatform\Doctrine\Orm\Filter\OrderFilter;
+use ApiPlatform\Metadata\ApiFilter;
 use ApiPlatform\Metadata\ApiResource;
 use ApiPlatform\Metadata\Get;
 use ApiPlatform\Metadata\GetCollection;
 use ApiPlatform\Metadata\Link;
+use App\Filter\MultipleFieldsSearchFilter;
 use App\Repository\NftRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
-use Doctrine\Common\Collections\Criteria;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation\Groups;
-use ApiPlatform\Metadata\ApiFilter;
-use ApiPlatform\Doctrine\Orm\Filter\SearchFilter;
-use App\Filter\MultipleFieldsSearchFilter;
-use App\Filter\LowestSellOfferFilter;
-use ApiPlatform\Doctrine\Orm\Filter\OrderFilter;
 
 #[ORM\Entity(repositoryClass: NftRepository::class)]
 #[ApiResource(
     operations: [
         new Get(),
-        new GetCollection( new GetCollection(normalizationContext: ['groups' => 'nft:collection:get']))
+        new GetCollection(normalizationContext: ['groups' => 'nft:collection:get'])
     ]
 )]
 #[ApiResource(
@@ -59,14 +57,10 @@ use ApiPlatform\Doctrine\Orm\Filter\OrderFilter;
     ],
     normalizationContext: ['groups' => 'nft:collection:get']
 )]
-
 #[ApiFilter(MultipleFieldsSearchFilter::class, properties: [
     'id' => 'exact', 'name' => 'partial'])]
-#[ApiFilter(OrderFilter::class, properties: ['id', 'name', 'offers.xchPrice'])]
-#[ApiFilter(LowestSellOfferFilter::class)]
-
+#[ApiFilter(OrderFilter::class, properties: ['id', 'name', 'lowestSellOffer.xchPrice' => ['nulls_comparison' => OrderFilterInterface::NULLS_ALWAYS_LAST]])]
 #[GetCollection (normalizationContext: ['groups' => 'nft:collection:get'])]
-
 class Nft
 {
     #[ORM\Id]
@@ -144,6 +138,10 @@ class Nft
 
     #[ORM\ManyToMany(targetEntity: Offer::class, mappedBy: 'nfts')]
     private Collection $offers;
+
+    #[ORM\OneToOne()]
+    #[Groups('nft:collection:get')]
+    private ?Offer $lowestSellOffer = null;
 
     public function __construct()
     {
@@ -453,15 +451,15 @@ class Nft
         return $this;
     }
 
-    #[Groups('nft:collection:get')]
     public function getLowestSellOffer(): ?Offer
     {
-        $criteria = Criteria::create()
-            ->orderBy(['xchPrice' => 'ASC'])
-            ->setMaxResults(1);
+        return $this->lowestSellOffer;
+    }
 
-        $result = $this->offers->filter(fn($offer) => $offer->getSide() == Offer::SIDE_OFFERED && $offer->getStatus() == 0)->matching($criteria);
+    public function setLowestSellOffer(?Offer $lowestSellOffer): self
+    {
+        $this->lowestSellOffer = $lowestSellOffer;
 
-        return $result->isEmpty() ? null : $result->first();
+        return $this;
     }
 }

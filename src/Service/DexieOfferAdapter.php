@@ -136,6 +136,7 @@ class DexieOfferAdapter implements OfferAdapter
     }
 
     /**
+     * @param int $side
      * @param mixed $item
      * @param Offer $offer
      */
@@ -146,6 +147,9 @@ class DexieOfferAdapter implements OfferAdapter
             $nft = $this->nftRepository->find($item['id']);
             if ($nft) {
                 $offer->addNft($nft);
+                if ($offer->getSide() == Offer::SIDE_OFFERED && $offer->getStatus() == 0 && (!$nft->getLowestSellOffer() || $nft->getLowestSellOffer()->getXchPrice() > $offer->getXchPrice())) {
+                    $nft->setLowestSellOffer($offer);
+                }
             }
         } else if ($item['id'] == 'xch') {
             $offer->setXchPrice($item['amount']);
