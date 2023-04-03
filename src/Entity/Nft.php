@@ -16,13 +16,14 @@ use Symfony\Component\Serializer\Annotation\Groups;
 use ApiPlatform\Metadata\ApiFilter;
 use ApiPlatform\Doctrine\Orm\Filter\SearchFilter;
 use App\Filter\MultipleFieldsSearchFilter;
+use App\Filter\LowestSellOfferFilter;
 use ApiPlatform\Doctrine\Orm\Filter\OrderFilter;
 
 #[ORM\Entity(repositoryClass: NftRepository::class)]
 #[ApiResource(
     operations: [
         new Get(),
-        new GetCollection()
+        new GetCollection( new GetCollection(normalizationContext: ['groups' => 'nft:collection:get']))
     ]
 )]
 #[ApiResource(
@@ -59,10 +60,11 @@ use ApiPlatform\Doctrine\Orm\Filter\OrderFilter;
     normalizationContext: ['groups' => 'nft:collection:get']
 )]
 
-#[ApiFilter(SearchFilter::class, properties: ['id' => 'exact', 'name' => 'partial'])]
 #[ApiFilter(MultipleFieldsSearchFilter::class, properties: [
     'id' => 'exact', 'name' => 'partial'])]
-#[ApiFilter(OrderFilter::class)]
+#[ApiFilter(OrderFilter::class, properties: ['id', 'name', 'offers.xchPrice'])]
+#[ApiFilter(LowestSellOfferFilter::class)]
+
 #[GetCollection (normalizationContext: ['groups' => 'nft:collection:get'])]
 
 class Nft
