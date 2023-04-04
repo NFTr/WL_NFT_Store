@@ -4,10 +4,12 @@ import { Collection } from '../../components/Collection';
 import { Container } from '../../components/Container';
 import { Grid_G, Grid_K, List, TwitterSvg, WebsiteSvg } from '../../components/SocialIcons';
 import { useCollection } from '../../hooks/api';
+import { Order } from '../../components/Order';
 
 export const CollectionPage: React.FC = () => {
   const { id } = useParams();
-  const { collection, nfts, isLoading, error } = useCollection(id || '');
+  const [orderTerm, setOrderTerm] = useState('');
+  const { collection, nfts, isLoading, error } = useCollection(id || '', orderTerm);
   const [gridStyle, setGridStyle] = useState('grid-compact');
 
   const getAttributeValue = (type: string): string | undefined => {
@@ -68,7 +70,8 @@ export const CollectionPage: React.FC = () => {
   );
   const renderGallery = () => (
     <div>
-      <div className="mb-2 flex justify-end">
+      <div className="mb-2 flex items-start justify-between">
+        <Order orderTerm={orderTerm} setOrderTerm={setOrderTerm}></Order>
         <button
           onClick={() => setGridStyle('list')}
           className="rounded py-2 px-4 hover:bg-slate-200 active:bg-slate-600 dark:hover:bg-gray-800"

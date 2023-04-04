@@ -1,13 +1,18 @@
 import useSWR from 'swr';
 import { fetcher } from '../utilities/fetcher';
 
-export function useCollection(collectionId: string) {
+export function useCollection(collectionId: string, order?: string) {
+  if (order) {
+    order = `?order=${order}`;
+  } else {
+    order = '';
+  }
   const { data: collection, error, isLoading } = useSWR(`/api/collections/${collectionId}`, fetcher);
   const {
     data: collectionNfts,
     error: errorNfts,
     isLoading: isNftsLoading,
-  } = useSWR(`/api/collections/${collectionId}/nfts`, fetcher);
+  } = useSWR(`/api/collections/${collectionId}/nfts${order}`, fetcher);
 
   if (isLoading || isNftsLoading) {
     return { isLoading: true };
@@ -19,20 +24,22 @@ export function useCollection(collectionId: string) {
   return { nfts: collectionNfts['hydra:member'], collection, error: undefined, isLoading: false };
 }
 
-export function useProfile(didId: string) {
+export function useProfile(didId: string, createdOrder?: string, ownedOrder?: string) {
+  createdOrder ? (createdOrder = `?order=${createdOrder}`) : (createdOrder = '');
+  ownedOrder ? (ownedOrder = `?order=${ownedOrder}`) : (ownedOrder = '');
   const { data: did, error, isLoading } = useSWR(`/api/dids/${didId}`, fetcher);
 
   const {
     data: createdNfts,
     error: createderrorNfts,
     isLoading: isLoadingCreatedNfts,
-  } = useSWR(`/api/dids/${didId}/created_nfts`, fetcher);
+  } = useSWR(`/api/dids/${didId}/created_nfts${createdOrder}`, fetcher);
 
   const {
     data: ownedNfts,
     error: ownederrorNfts,
     isLoading: isLoadingOwnedNfts,
-  } = useSWR(`/api/dids/${didId}/owned_nfts`, fetcher);
+  } = useSWR(`/api/dids/${didId}/owned_nfts${ownedOrder}`, fetcher);
 
   if (isLoading || isLoadingCreatedNfts || isLoadingOwnedNfts) {
     return { isLoading: true };
