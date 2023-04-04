@@ -6,6 +6,7 @@ import { List, Grid_K, Grid_G, SearchSVG, DropdownSVG } from './SocialIcons';
 import { Menu, Transition } from '@headlessui/react';
 import { useSearch } from '../hooks/api';
 import { Order } from './Order';
+import { GridStyle } from './GridStyle';
 
 export const Searchbar: React.FC = () => {
   const fetcher = (url: string) => fetch(url).then((res) => res.json());
@@ -51,26 +52,7 @@ export const Searchbar: React.FC = () => {
             <div>
               <div className="mt-6 mb-2 flex items-start justify-between">
                 <Order orderTerm={orderTerm} setOrderTerm={setOrderTerm}></Order>
-                <div className="">
-                  <button
-                    onClick={() => setGridStyle('list')}
-                    className="rounded py-2 px-4 hover:bg-slate-200 dark:hover:bg-gray-800"
-                  >
-                    <List></List>
-                  </button>
-                  <button
-                    onClick={() => setGridStyle('grid-compact')}
-                    className="rounded py-2 px-4 hover:bg-slate-200 dark:hover:bg-gray-800"
-                  >
-                    <Grid_K></Grid_K>
-                  </button>
-                  <button
-                    onClick={() => setGridStyle('grid')}
-                    className="rounded py-2 px-4 hover:bg-slate-200 dark:hover:bg-gray-800"
-                  >
-                    <Grid_G></Grid_G>
-                  </button>
-                </div>
+                <GridStyle gridStyle={gridStyle} setGridStyle={setGridStyle}></GridStyle>
               </div>
             </div>
             <div>

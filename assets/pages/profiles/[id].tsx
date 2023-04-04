@@ -5,6 +5,7 @@ import { Container } from '../../components/Container';
 import { Grid_G, Grid_K, List } from '../../components/SocialIcons';
 import { useProfile } from '../../hooks/api';
 import { Order } from '../../components/Order';
+import { GridStyle } from '../../components/GridStyle';
 
 export const DIDPage: React.FC = () => {
   const { id } = useParams();
@@ -36,24 +37,7 @@ export const DIDPage: React.FC = () => {
         <div className="flex justify-center text-4xl font-bold dark:text-white/90">Created NFTs</div>
         <div className=" mb-2 flex items-start justify-between">
           <Order orderTerm={createdOrderTerm} setOrderTerm={setCreatedOrderTerm}></Order>
-          <button
-            onClick={() => setCreatedGridStyle('list')}
-            className="rounded py-2 px-4 hover:bg-slate-200 dark:hover:bg-gray-800"
-          >
-            <List></List>
-          </button>
-          <button
-            onClick={() => setCreatedGridStyle('grid-compact')}
-            className="rounded py-2 px-4 hover:bg-slate-200 dark:hover:bg-gray-800"
-          >
-            <Grid_K></Grid_K>
-          </button>
-          <button
-            onClick={() => setCreatedGridStyle('grid')}
-            className="rounded py-2 px-4 hover:bg-slate-200 dark:hover:bg-gray-800"
-          >
-            <Grid_G></Grid_G>
-          </button>
+          <GridStyle gridStyle={createdgridStyle} setGridStyle={setCreatedGridStyle}></GridStyle>
         </div>
         <Collection isLoading={isLoading} collectionNfts={createdNfts} gridStyle={createdgridStyle} />
       </div>
@@ -67,24 +51,7 @@ export const DIDPage: React.FC = () => {
         <div className="flex justify-center text-4xl font-bold dark:text-white/90">Owned NFTs</div>
         <div className=" mb-2 flex items-start justify-between">
           <Order orderTerm={ownedOrderTerm} setOrderTerm={setOwnedOrderTerm}></Order>
-          <button
-            onClick={() => setOwnedGridStyle('list')}
-            className="rounded py-2 px-4 hover:bg-slate-200 dark:hover:bg-gray-800"
-          >
-            <List></List>
-          </button>
-          <button
-            onClick={() => setOwnedGridStyle('grid-compact')}
-            className="rounded py-2 px-4 hover:bg-slate-200 dark:hover:bg-gray-800"
-          >
-            <Grid_K></Grid_K>
-          </button>
-          <button
-            onClick={() => setOwnedGridStyle('grid')}
-            className="rounded py-2 px-4 hover:bg-slate-200 dark:hover:bg-gray-800"
-          >
-            <Grid_G></Grid_G>
-          </button>
+          <GridStyle gridStyle={ownedgridStyle} setGridStyle={setOwnedGridStyle}></GridStyle>
         </div>
         <Collection isLoading={isLoading} collectionNfts={ownedNfts} gridStyle={ownedgridStyle} />
       </div>

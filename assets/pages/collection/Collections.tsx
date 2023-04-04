@@ -3,7 +3,8 @@ import useSWR from 'swr';
 import { CollectionList } from '../../components/CollectionList';
 import { Container } from '../../components/Container';
 import { fetcher } from '../../utilities/fetcher';
-import { TwitterSvg, WebsiteSvg, Grid_G, Grid_K, List} from '../../components/SocialIcons'
+import { TwitterSvg, WebsiteSvg, Grid_G, Grid_K, List } from '../../components/SocialIcons';
+import { GridStyle } from '../../components/GridStyle';
 
 export const Collections: React.FC = () => {
   const { data: collections, error, isLoading } = useSWR(`/api/collections`, fetcher);
@@ -16,24 +17,7 @@ export const Collections: React.FC = () => {
     ) : (
       <div>
         <div className="w-100 mb-2 flex justify-end">
-          <button
-            onClick={() => setGridStyle('list')}
-            className="rounded py-2 px-4 hover:bg-slate-200 dark:hover:bg-gray-800"
-          >
-            <List></List>
-          </button>
-          <button
-            onClick={() => setGridStyle('grid-compact')}
-            className="rounded py-2 px-4 hover:bg-slate-200 dark:hover:bg-gray-800"
-          >
-            <Grid_K></Grid_K>
-          </button>
-          <button
-            onClick={() => setGridStyle('grid')}
-            className="rounded py-2 px-4 hover:bg-slate-200 dark:hover:bg-gray-800"
-          >
-            <Grid_G></Grid_G>
-          </button>
+          <GridStyle gridStyle={gridStyle} setGridStyle={setGridStyle} />
         </div>
         <CollectionList collections={collections['hydra:member']} gridStyle={gridStyle} />
       </div>
