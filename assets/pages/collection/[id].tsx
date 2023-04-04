@@ -2,9 +2,10 @@ import React, { useState } from 'react';
 import { useParams } from 'react-router';
 import { Collection } from '../../components/Collection';
 import { Container } from '../../components/Container';
-import { Grid_G, Grid_K, List, TwitterSvg, WebsiteSvg } from '../../components/SocialIcons';
+import { Grid_G, Grid_K, List, TwitterSvg, WebsiteSvg } from '../../components/Icons';
 import { useCollection } from '../../hooks/api';
 import { Order } from '../../components/Order';
+import { GridStyle } from '../../components/GridStyle';
 
 export const CollectionPage: React.FC = () => {
   const { id } = useParams();
@@ -72,24 +73,7 @@ export const CollectionPage: React.FC = () => {
     <div>
       <div className="mb-2 flex items-start justify-between">
         <Order orderTerm={orderTerm} setOrderTerm={setOrderTerm}></Order>
-        <button
-          onClick={() => setGridStyle('list')}
-          className="rounded py-2 px-4 hover:bg-slate-200 active:bg-slate-600 dark:hover:bg-gray-800"
-        >
-          <List></List>
-        </button>
-        <button
-          onClick={() => setGridStyle('grid-compact')}
-          className="rounded py-2 px-4 hover:bg-slate-200 dark:hover:bg-gray-800"
-        >
-          <Grid_K></Grid_K>
-        </button>
-        <button
-          onClick={() => setGridStyle('grid')}
-          className="rounded py-2 px-4 hover:bg-slate-200 dark:hover:bg-gray-800"
-        >
-          <Grid_G></Grid_G>
-        </button>
+        <GridStyle gridStyle={gridStyle} setGridStyle={setGridStyle}></GridStyle>
       </div>
       <Collection isLoading={isLoading} collectionNfts={nfts} gridStyle={gridStyle} />
     </div>

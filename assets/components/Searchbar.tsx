@@ -1,9 +1,7 @@
-import React, { Fragment, useState } from 'react';
-import useSWR from 'swr';
+import React, { useState } from 'react';
 import { Collection } from './Collection';
 import { CollectionList } from './CollectionList';
-import { List, Grid_K, Grid_G, SearchSVG, DropdownSVG } from './SocialIcons';
-import { Menu, Transition } from '@headlessui/react';
+import { SearchSVG, DropdownSVG } from './Icons';
 import { useSearch } from '../hooks/api';
 import { Order } from './Order';
 import { GridStyle } from './GridStyle';

@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import useSWR from 'swr';
 import { Collection } from '../components/Collection';
 import { Container } from '../components/Container';
-import { Grid_G, Grid_K, List } from '../components/SocialIcons';
+import { Grid_G, Grid_K, List } from '../components/Icons';
 import { useCollection, useProfile } from '../hooks/api';
 import { fetcher } from '../utilities/fetcher';
 

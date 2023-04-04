@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import { useParams } from 'react-router';
 import { Collection } from '../../components/Collection';
 import { Container } from '../../components/Container';
-import { Grid_G, Grid_K, List } from '../../components/SocialIcons';
 import { useProfile } from '../../hooks/api';
 import { Order } from '../../components/Order';
 import { GridStyle } from '../../components/GridStyle';

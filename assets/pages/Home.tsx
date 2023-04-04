@@ -1,9 +1,9 @@
 import clsx from 'clsx';
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import { Link } from 'react-router-dom';
 import { Container } from '../components/Container';
 
-import { DiscordIcon, TwitterIcon } from '../components/SocialIcons';
+import { DiscordIcon, TwitterIcon } from '../components/Icons';
 
 import useSWR from 'swr';
 import { fetcher } from '../utilities/fetcher';

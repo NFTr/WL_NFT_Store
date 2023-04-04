@@ -3,7 +3,6 @@ import useSWR from 'swr';
 import { CollectionList } from '../../components/CollectionList';
 import { Container } from '../../components/Container';
 import { fetcher } from '../../utilities/fetcher';
-import { TwitterSvg, WebsiteSvg, Grid_G, Grid_K, List } from '../../components/SocialIcons';
 import { GridStyle } from '../../components/GridStyle';
 
 export const Collections: React.FC = () => {

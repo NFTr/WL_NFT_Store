@@ -1,6 +1,6 @@
 import React, { Fragment, useState } from 'react';
 import { Menu, Transition } from '@headlessui/react';
-import { DropdownSVG } from './SocialIcons';
+import { DropdownSVG } from './Icons';
 
 export const Order: React.FC<{ orderTerm: string; setOrderTerm: (term: string) => void }> = ({
   orderTerm,

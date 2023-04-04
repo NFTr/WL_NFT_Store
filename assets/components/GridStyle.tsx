@@ -1,7 +1,5 @@
-import React, { Fragment, useState } from 'react';
-import { Menu, Transition } from '@headlessui/react';
-import { DropdownSVG } from './SocialIcons';
-import { List, Grid_K, Grid_G } from './SocialIcons';
+import React from 'react';
+import { List, Grid_K, Grid_G } from './Icons';
 
 export const GridStyle: React.FC<{ gridStyle: string; setGridStyle: (term: string) => void }> = ({
   gridStyle,
