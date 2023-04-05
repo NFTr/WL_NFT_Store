@@ -3,6 +3,7 @@ import React, { useState } from 'react';
 import { useParams } from 'react-router-dom';
 import useSWR from 'swr';
 import { Container } from '../../components/Container';
+import { MintSVG, TradeSVG } from '../../components/Icons';
 import { Nft } from '../../interfaces/nft';
 import { fetcher } from '../../utilities/fetcher';
 
@@ -151,6 +152,94 @@ export const NftPage: React.FC = () => {
     );
   }
 
+  function renderProvenance(nft: Nft) {
+    const dummyTrades = [
+      {
+        type: 'trade',
+        amount: 200,
+        dateFound: new Date(),
+        to: '0x12325263839373425272',
+      },
+      {
+        type: 'mint',
+        dateFound: new Date(),
+        to: '0x1233838262737327',
+      },
+    ];
+
+    return (
+      <>
+        <h3 className="text-2xl font-bold">Provenance</h3>
+        <div className="mt-4 grid gap-4">
+          {dummyTrades.map((activity) => (
+            <div className="rounded-lg border border-zinc-200 p-4 dark:border-zinc-600">
+              {activity.type === 'trade' ? (
+                <div className="flex items-center gap-4">
+                  <TradeSVG />
+                  <div>
+                    <div className="flex items-center gap-1">
+                      <div className="flex items-center gap-1">
+                        <div className="font-medium">Acquired by</div>
+                        <div className="font-bold">{activity.to}</div>
+                        <div>for</div>
+                      </div>
+                      <div className="flex items-center">
+                        <img className="h-8" src="/chiaLogo.png" alt="Chia logo" />
+                        <div className="font-medium">{activity.amount} XCH</div>
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-1 text-gray-500">
+                      <div className="text-sm font-bold">
+                        {new Date(activity.dateFound).toLocaleString('default', {
+                          day: '2-digit',
+                          month: 'long',
+                          year: '2-digit',
+                        })}
+                      </div>
+                      <div className="text-sm">
+                        {new Date(activity.dateFound).toLocaleString('default', {
+                          hour: '2-digit',
+                          minute: '2-digit',
+                        })}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              ) : (
+                <div className="flex items-center gap-4">
+                  <MintSVG />
+                  <div>
+                    <div>
+                      <div className="flex items-center gap-1">
+                        <div className="font-medium">Minted by</div>
+                        <div className="font-bold">{activity.to}</div>
+                      </div>
+                      <div className="flex items-center gap-1 text-gray-500">
+                        <div className="text-sm font-bold">
+                          {new Date(activity.dateFound).toLocaleString('default', {
+                            day: '2-digit',
+                            month: 'long',
+                            year: '2-digit',
+                          })}
+                        </div>
+                        <div className="text-sm">
+                          {new Date(activity.dateFound).toLocaleString('default', {
+                            hour: '2-digit',
+                            minute: '2-digit',
+                          })}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              )}
+            </div>
+          ))}
+        </div>
+      </>
+    );
+  }
+
   // const nft: any = undefined;
   return (
     <Container>
@@ -191,6 +280,7 @@ export const NftPage: React.FC = () => {
               ) : (
                 ''
               )}
+              <div className="mt-12">{renderProvenance(nft)}</div>
             </div>
           ) : (
             <div>Loading...</div>
