@@ -2,6 +2,7 @@
 
 namespace App\Repository;
 
+use App\Entity\Nft;
 use App\Entity\Offer;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
@@ -54,13 +55,28 @@ class OfferRepository extends ServiceEntityRepository
 //        ;
 //    }
 
-//    public function findOneBySomeField($value): ?Offer
-//    {
-//        return $this->createQueryBuilder('o')
-//            ->andWhere('o.exampleField = :val')
-//            ->setParameter('val', $value)
-//            ->getQuery()
-//            ->getOneOrNullResult()
-//        ;
-//    }
+    public function findNewestOfferForCollection($collectionId, string $orderBy): ?Offer
+    {
+        return $this->createQueryBuilder('o')
+            ->join('o.nfts', 'n')
+            ->andWhere('n.collection = :val')
+            ->andWhere(sprintf('o.%s is not null', $orderBy))
+            ->setParameter('val', $collectionId)
+            ->setMaxResults(1)
+            ->orderBy('o.' . $orderBy, 'desc')
+            ->getQuery()
+            ->getOneOrNullResult();
+    }
+
+    public function findLowestSellOfferForNft(Nft $nft): ?Offer
+    {
+        return $this->createQueryBuilder('o')
+            ->join('o.nfts', 'n')
+            ->andWhere('n.id = :val')
+            ->setParameter('val', $nft)
+            ->setMaxResults(1)
+            ->orderBy('o.xchPrice', 'asc')
+            ->getQuery()
+            ->getOneOrNullResult();
+    }
 }

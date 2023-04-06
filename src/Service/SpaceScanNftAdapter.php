@@ -126,12 +126,12 @@ class SpaceScanNftAdapter implements NftAdapter
 
                 if ($nftToImport->minter_did) {
                     $creator = $this->didRepository->find($nftToImport->minter_did);
-                    if (!$creator) {
-                        $creator = new Did();
-                        $creator->setId($nftToImport->minter_did);
-                        $creator->setEncodedId($this->puzzleHashConverter->encodePuzzleHash($nftToImport->minter_did, 'did:chia:'));
-                        $this->didRepository->save($creator);
-                    }
+if (!$creator) {
+    $creator = new Did();
+    $creator->setId($nftToImport->minter_did);
+    $creator->setEncodedId($this->puzzleHashConverter->encodePuzzleHash($nftToImport->minter_did, 'did:chia:'));
+    $this->didRepository->save($creator);
+}
                     $nft->setCreator($creator);
                 }
 

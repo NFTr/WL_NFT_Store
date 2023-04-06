@@ -49,21 +49,36 @@ class DexieOfferAdapter implements OfferAdapter
     {
         $this->entityManager->getConnection()->getConfiguration()->setSQLLogger(null);
         $this->logger->info("Fetching offers from collection $collectionId");
-        $this->importAllOfferPages("$this->baseUrl/offers?offered=$collectionId&requested=xch&count=100&status=0&status=3&status=4");
-        $this->importAllOfferPages("$this->baseUrl/offers?offered=xch&requested=$collectionId&count=100&status=0&status=3&status=4");
+        $this->importOffersSinceLastKnownOffer($collectionId, Offer::SIDE_OFFERED, [0]);
+        $this->importOffersSinceLastKnownOffer($collectionId, Offer::SIDE_REQUESTED, [0]);
+        $this->importOffersSinceLastKnownOffer($collectionId, Offer::SIDE_OFFERED, [3, 4]);
+        $this->importOffersSinceLastKnownOffer($collectionId, Offer::SIDE_REQUESTED, [3, 4]);
     }
 
 
     /**
-     * @param string $url
+     * @param string $collectionId
+     * @param int $side
+     * @param array $statuses
      * @return void
      * @throws ClientExceptionInterface
      * @throws RedirectionExceptionInterface
      * @throws ServerExceptionInterface
      * @throws TransportExceptionInterface
      */
-    public function importAllOfferPages(string $url): void
+    public function importOffersSinceLastKnownOffer(string $collectionId, int $side, array $statuses): void
     {
+        $isStatusOpen = $statuses[0] == 0;
+        $newestOffer = $this->offerRepository->findNewestOfferForCollection($collectionId, $isStatusOpen ? 'dateFound' : 'dateCompleted');
+
+        $date = $isStatusOpen ? $newestOffer?->getDateFound() : $newestOffer?->getDateCompleted();
+        $sort = $isStatusOpen ? 'date_found' : "date_completed";
+
+        $offered = $side == Offer::SIDE_OFFERED ? $collectionId : 'xch';
+        $requested = $side == Offer::SIDE_REQUESTED ? $collectionId : 'xch';
+        $status = join("&status=", $statuses);
+        $url = "$this->baseUrl/offers?offered=$offered&requested=$requested&count=100&sort=$sort&status=$status";
+
         $page = 1;
         while (true) {
             $response = $this->client->request('GET', "$url&page=$page");
@@ -74,7 +89,17 @@ class DexieOfferAdapter implements OfferAdapter
                 break;
             }
             foreach ($offersToImport as $offerToImport) {
-                $this->importOffer($offerToImport);
+                $offer = $this->importOffer($offerToImport);
+                if ($newestOffer) {
+                    if ($isStatusOpen && $offer->getDateFound() < $date) {
+                        $this->entityManager->flush();
+                        return;
+                    }
+                    if (!$isStatusOpen && $offer->getDateCompleted() < $date) {
+                        $this->entityManager->flush();
+                        return;
+                    }
+                }
             }
             $this->entityManager->flush();
             $this->entityManager->clear();
@@ -84,7 +109,7 @@ class DexieOfferAdapter implements OfferAdapter
         }
     }
 
-    public function importOffer(mixed $offerToImport): void
+    public function importOffer(mixed $offerToImport): Offer
     {
         $this->logger->info("Importing offer $offerToImport->id");
         $offer = $this->offerRepository->find($offerToImport->id);
@@ -101,6 +126,7 @@ class DexieOfferAdapter implements OfferAdapter
             }
         }
         $this->offerRepository->save($offer);
+        return $offer;
     }
 
     private function convertAndUpdateOffer(?Offer $offer, mixed $offerToImport): Offer
@@ -119,6 +145,12 @@ class DexieOfferAdapter implements OfferAdapter
         $offer->setStatus($offerToImport->status);
         if ($offerToImport->date_completed) {
             $offer->setDateCompleted(DateTime::createFromFormat('Y-m-d\TH:i:s.v\Z', $offerToImport->date_completed));
+            $nfts = $offer->getNfts();
+            foreach ($nfts as $nft) {
+                if ($nft->getLowestSellOffer()?->getId() == $offer->getId()) {
+                    $nft->setLowestSellOffer($this->offerRepository->findLowestSellOfferForNft($nft));
+                }
+            }
         }
 
         return $offer;
@@ -130,7 +162,7 @@ class DexieOfferAdapter implements OfferAdapter
             if (property_exists($value, 'is_nft')) {
                 return ['id' => $this->puzzleHashConverter->encodePuzzleHash($value->id, 'nft'), 'amount' => 1];
             }
-            return (array) $value;
+            return (array)$value;
         };
         return array_map($cleanup, $offeredRequested);
     }
