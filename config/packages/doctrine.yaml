@@ -24,7 +24,7 @@ when@test:
       dbname_suffix: '_test%env(default::TEST_TOKEN)%'
 
 when@prod:
-  doctrine:w
+  doctrine:
     orm:
       auto_generate_proxy_classes: false
       query_cache_driver:
