@@ -57,6 +57,30 @@ use Symfony\Component\Serializer\Annotation\Groups;
     ],
     normalizationContext: ['groups' => 'nft:collection:get']
 )]
+
+#[ApiResource(
+    uriTemplate: '/addresses/{id}/created_nfts',
+    operations: [new GetCollection()],
+    uriVariables: [
+        'id' => new Link(
+            fromProperty: 'createdNfts',
+            fromClass: Address::class
+        )
+    ],
+    normalizationContext: ['groups' => 'nft:collection:get']
+)]
+#[ApiResource(
+    uriTemplate: '/addresses/{id}/owned_nfts',
+    operations: [new GetCollection()],
+    uriVariables: [
+        'id' => new Link(
+            fromProperty: 'ownedNfts',
+            fromClass: Address::class
+        )
+    ],
+    normalizationContext: ['groups' => 'nft:collection:get']
+)]
+
 #[ApiFilter(MultipleFieldsSearchFilter::class, properties: [
     'id' => 'exact', 'name' => 'partial'])]
 #[ApiFilter(OrderFilter::class, properties: ['id', 'name', 'lowestSellOffer.xchPrice' => ['nulls_comparison' => OrderFilterInterface::NULLS_ALWAYS_LAST]])]
@@ -135,6 +159,12 @@ class Nft
 
     #[ORM\ManyToOne(inversedBy: 'ownedNfts')]
     private ?Did $owner = null;
+
+    #[ORM\ManyToOne(inversedBy: 'createdNfts')]
+    private ?Address $creatorAddress = null;
+
+    #[ORM\ManyToOne(inversedBy: 'ownedNfts')]
+    private ?Address $ownerAddress = null;
 
     #[ORM\ManyToMany(targetEntity: Offer::class, mappedBy: 'nfts')]
     private Collection $offers;
@@ -420,6 +450,30 @@ class Nft
     public function setOwner(?Did $owner): self
     {
         $this->owner = $owner;
+
+        return $this;
+    }
+
+    public function getCreatorAddress(): ?Address
+    {
+        return $this->creatorAddress;
+    }
+
+    public function setCreatorAddress(?Address $creatorAddress): self
+    {
+        $this->creatorAddress = $creatorAddress;
+
+        return $this;
+    }
+
+    public function getOwnerAddress(): ?Address
+    {
+        return $this->ownerAddress;
+    }
+
+    public function setOwnerAddress(?Address $ownerAddress): self
+    {
+        $this->ownerAddress = $ownerAddress;
 
         return $this;
     }
