@@ -3,6 +3,7 @@ import React, { useState } from 'react';
 import { useParams } from 'react-router-dom';
 import useSWR from 'swr';
 import { Container } from '../../components/Container';
+import { useGoby } from '../../components/Goby';
 import { MintSVG, TradeSVG } from '../../components/Icons';
 import { Nft } from '../../interfaces/nft';
 import { fetcher } from '../../utilities/fetcher';
@@ -109,6 +110,7 @@ export const NftPage: React.FC = () => {
                           </div>
                         </div>
                       </a>
+                      <button onClick={() => useGoby().takeOffer({ offer: offer.id, fee: 0 })}>Take Offer</button>
                     </div>
                   </div>
                 ))
