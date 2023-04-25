@@ -33,7 +33,7 @@ class Address
     private ?string $id = null;
 
     #[ORM\Column(length: 255)]
-    private ?string $encodeAddress = null;
+    private ?string $encodedAddress = null;
 
     #[ORM\Column(type: Types::TEXT, nullable: true)]
     private ?string $name = null;
@@ -62,14 +62,14 @@ class Address
         return $this;
     }
 
-    public function getEncodeAddress(): ?string
+    public function getEncodedAddress(): ?string
     {
-        return $this->encodeAddress;
+        return $this->encodedAddress;
     }
 
-    public function setEncodeAddress(string $encodeAddress): self
+    public function setEncodedAddress(string $encodedAddress): self
     {
-        $this->encodeAddress = $encodeAddress;
+        $this->encodedAddress = $encodedAddress;
 
         return $this;
     }
@@ -98,7 +98,7 @@ class Address
     {
         if (!$this->createdNfts->contains($createdNft)) {
             $this->createdNfts->add($createdNft);
-            $createdNft->setCreator($this);
+            $createdNft->setCreatorAddress($this);
         }
 
         return $this;
@@ -108,8 +108,8 @@ class Address
     {
         if ($this->createdNfts->removeElement($createdNft)) {
             // set the owning side to null (unless already changed)
-            if ($createdNft->getCreator() === $this) {
-                $createdNft->setCreator(null);
+            if ($createdNft->getCreatorAddress() === $this) {
+                $createdNft->setCreatorAddress(null);
             }
         }
 
@@ -128,7 +128,7 @@ class Address
     {
         if (!$this->ownedNfts->contains($ownedNft)) {
             $this->ownedNfts->add($ownedNft);
-            $ownedNft->setOwner($this);
+            $ownedNft->setOwnerAddress($this);
         }
 
         return $this;
@@ -138,8 +138,8 @@ class Address
     {
         if ($this->ownedNfts->removeElement($ownedNft)) {
             // set the owning side to null (unless already changed)
-            if ($ownedNft->getOwner() === $this) {
-                $ownedNft->setOwner(null);
+            if ($ownedNft->getOwnerAddress() === $this) {
+                $ownedNft->setOwnerAddress(null);
             }
         }
 

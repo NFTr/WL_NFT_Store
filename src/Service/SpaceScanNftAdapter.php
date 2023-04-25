@@ -2,9 +2,11 @@
 
 namespace App\Service;
 
+use App\Entity\Address;
 use App\Entity\Did;
 use App\Entity\Nft;
 use App\Entity\NftCollection;
+use App\Repository\AddressRepository;
 use App\Repository\DidRepository;
 use App\Repository\NftCollectionRepository;
 use App\Repository\NftRepository;
@@ -23,19 +25,30 @@ class SpaceScanNftAdapter implements NftAdapter
     private LoggerInterface $logger;
     private NftRepository $nftRepository;
     private DidRepository $didRepository;
+    private AddressRepository $addressRepository;
     private NftCollectionRepository $collectionRepository;
     private PuzzleHashConverter $puzzleHashConverter;
     private EntityManagerInterface $entityManager;
 
     private string $baseUrl;
 
-    public function __construct(string $baseUrl, HttpClientInterface $client, LoggerInterface $logger, NftRepository $nftRepository, DidRepository $didRepository, NftCollectionRepository $collectionRepository, PuzzleHashConverter $puzzleHashConverter, EntityManagerInterface $entityManager)
-    {
+    public function __construct(
+        string $baseUrl,
+        HttpClientInterface $client,
+        LoggerInterface $logger,
+        NftRepository $nftRepository,
+        DidRepository $didRepository,
+        AddressRepository $addressRepository,
+        NftCollectionRepository $collectionRepository,
+        PuzzleHashConverter $puzzleHashConverter,
+        EntityManagerInterface $entityManager
+    ) {
         $this->baseUrl = $baseUrl;
 
         $this->client = $client;
         $this->logger = $logger;
         $this->nftRepository = $nftRepository;
+        $this->addressRepository = $addressRepository;
         $this->didRepository = $didRepository;
         $this->collectionRepository = $collectionRepository;
         $this->puzzleHashConverter = $puzzleHashConverter;
@@ -55,7 +68,10 @@ class SpaceScanNftAdapter implements NftAdapter
         $nfts = [];
         $page = 1;
         while (true) {
-            $response = $this->client->request('GET', "$this->baseUrl/1/xch/did/$creatorId?page=$page&count=100&type=nft");
+            $response = $this->client->request(
+                'GET',
+                "$this->baseUrl/1/xch/did/$creatorId?page=$page&count=100&type=nft"
+            );
             $JsonResponse = json_decode($response->getContent());
             $nftsToImport = $JsonResponse->created;
             $page += 1;
@@ -77,25 +93,15 @@ class SpaceScanNftAdapter implements NftAdapter
 
                 $nft = $this->convertAndUpdateNft($nft, $nftToImport);
 
-                $nft->setCreator($creator);
-
-                if ($nftToImport->synthetic_id) {
-                    $collection = $this->collectionRepository->find($nftToImport->synthetic_id);
-                    if (!$collection) {
-                        $collection = new NftCollection();
-                        $collection->setId($nftToImport->synthetic_id);
-                        $collection->setName($nftToImport->meta_info->collection->name);
-                        $collection->setAttributes($nftToImport->meta_info->collection->attributes);
-                        $this->collectionRepository->save($collection);
-                    }
-                    $nft->setCollection($collection);
-                }
-
+                $this->setMinterAddressAndDid($nftToImport, $nft);
+                $this->setOwnerAddressAndDid($nftToImport, $nft);
+                $this->setCollection($nftToImport, $nft);
 
                 $this->nftRepository->save($nft, true);
                 $nfts[] = $nft;
             }
         }
+
         return $nfts;
     }
 
@@ -111,7 +117,10 @@ class SpaceScanNftAdapter implements NftAdapter
         $this->logger->info("Fetching NFTs from collection $collectionId");
         $page = 1;
         while (true) {
-            $response = $this->client->request('GET', "$this->baseUrl/api/nft/collection/$collectionId?coin=xch&version=1&page=$page&count=100");
+            $response = $this->client->request(
+                'GET',
+                "$this->baseUrl/api/nft/collection/$collectionId?coin=xch&version=1&page=$page&count=100"
+            );
             $JsonResponse = json_decode($response->getContent());
             $nftsToImport = $JsonResponse->data;
             $page += 1;
@@ -124,40 +133,9 @@ class SpaceScanNftAdapter implements NftAdapter
 
                 $nft = $this->convertAndUpdateNft($nft, $nftToImport);
 
-                if ($nftToImport->minter_did) {
-                    $creator = $this->didRepository->find($nftToImport->minter_did);
-if (!$creator) {
-    $creator = new Did();
-    $creator->setId($nftToImport->minter_did);
-    $creator->setEncodedId($this->puzzleHashConverter->encodePuzzleHash($nftToImport->minter_did, 'did:chia:'));
-    $this->didRepository->save($creator);
-}
-                    $nft->setCreator($creator);
-                }
-
-                if ($nftToImport->nft_info->owner_did) {
-                    $owner = $this->didRepository->find($nftToImport->nft_info->owner_did);
-                    if (!$owner) {
-                        $owner = new Did();
-                        $owner->setId($nftToImport->nft_info->owner_did);
-                        $owner->setEncodedId($this->puzzleHashConverter->encodePuzzleHash($nftToImport->nft_info->owner_did, 'did:chia:'));
-                        $this->didRepository->save($owner);
-                    }
-                    $nft->setOwner($owner);
-                }
-
-                if ($nftToImport->synthetic_id) {
-                    $collection = $this->collectionRepository->find($nftToImport->synthetic_id);
-                    if (!$collection) {
-                        $collection = new NftCollection();
-                        $collection->setId($nftToImport->synthetic_id);
-                        $collection->setName($nftToImport->meta_info->collection->name);
-                        $collection->setAttributes($nftToImport->meta_info->collection->attributes);
-                        $this->collectionRepository->save($collection);
-                    }
-                    $nft->setCollection($collection);
-                }
-
+                $this->setMinterAddressAndDid($nftToImport, $nft);
+                $this->setOwnerAddressAndDid($nftToImport, $nft);
+                $this->setCollection($nftToImport, $nft);
 
                 $this->nftRepository->save($nft);
             }
@@ -174,7 +152,9 @@ if (!$creator) {
             $nft->setId($nftId);
             $nft->setLauncherId(str_replace('0x', '', $nftToImport->nft_info->launcher_id));
             $nft->setRoyaltyPercentage($nftToImport->nft_info->royalty_percentage);
-            $nft->setRoyaltyAddress($this->puzzleHashConverter->encodePuzzleHash($nftToImport->nft_info->royalty_puzzle_hash));
+            $nft->setRoyaltyAddress(
+                $this->puzzleHashConverter->encodePuzzleHash($nftToImport->nft_info->royalty_puzzle_hash)
+            );
 
             $nft->setMintHeight($nftToImport->created_height);
             if (property_exists($nftToImport->nft_info, 'edition_number')
@@ -198,5 +178,99 @@ if (!$creator) {
         $nft->setAttributes($nftToImport->meta_info->attributes);
 
         return $nft;
+    }
+
+    /**
+     * @param mixed $nftToImport
+     * @param Nft $nft
+     * @return void
+     */
+    public function setCollection(mixed $nftToImport, Nft $nft): void
+    {
+        if ($nftToImport->synthetic_id) {
+            $collection = $this->collectionRepository->find($nftToImport->synthetic_id);
+            if (!$collection) {
+                $collection = new NftCollection();
+                $collection->setId($nftToImport->synthetic_id);
+                $collection->setName($nftToImport->meta_info->collection->name);
+                $collection->setAttributes($nftToImport->meta_info->collection->attributes);
+                $this->collectionRepository->save($collection);
+            }
+            $nft->setCollection($collection);
+        }
+    }
+
+    /**
+     * @param mixed $nftToImport
+     * @param Nft $nft
+     * @return void
+     */
+    public function setMinterAddressAndDid(mixed $nftToImport, Nft $nft): void
+    {
+        if ($nftToImport->minter_did) {
+            $creator = $this->getOrCreateDid($nftToImport->minter_did);
+            $nft->setCreator($creator);
+        }
+
+        if ($nftToImport->minter_hash) {
+            $creatorAddress = $this->getOrCreateAddress($nftToImport->minter_hash);
+            $nft->setCreatorAddress($creatorAddress);
+        }
+    }
+
+    /**
+     * @param mixed $nftToImport
+     * @param Nft $nft
+     * @return void
+     */
+    public function setOwnerAddressAndDid(mixed $nftToImport, Nft $nft): void
+    {
+        if ($nftToImport->nft_info->owner_did) {
+            $owner = $this->getOrCreateDid($nftToImport->nft_info->owner_did);
+            $nft->setOwner($owner);
+        }
+
+        if ($nftToImport->owner_hash) {
+            $ownerAddress = $this->getOrCreateAddress($nftToImport->owner_hash);
+            $nft->setOwnerAddress($ownerAddress);
+        }
+    }
+
+    /**
+     * @param string $didId
+     * @return Did
+     */
+    public function getOrCreateDid(string $didId): Did
+    {
+        $did = $this->didRepository->find($didId);
+        if (!$did) {
+            $did = new Did();
+            $did->setId($didId);
+            $did->setEncodedId(
+                $this->puzzleHashConverter->encodePuzzleHash($didId, 'did:chia:')
+            );
+            $this->didRepository->save($did);
+        }
+
+        return $did;
+    }
+
+    /**
+     * @param string $puzzleHash
+     * @return Address
+     */
+    public function getOrCreateAddress(string $puzzleHash): Address
+    {
+        $address = $this->addressRepository->find($puzzleHash);
+        if (!$address) {
+            $address = new Address();
+            $address->setId($puzzleHash);
+            $address->setEncodedAddress(
+                $this->puzzleHashConverter->encodePuzzleHash($puzzleHash)
+            );
+            $this->addressRepository->save($address);
+        }
+
+        return $address;
     }
 }
