@@ -21,15 +21,15 @@ export const Order: React.FC<{ orderTerm: string; setOrderTerm: (term: string) =
         {({ open }) => (
           <>
             <Menu.Button
-              className="flex items-center rounded-lg bg-white/90 py-2 pl-5 text-lg font-bold text-zinc-800 shadow-md shadow-zinc-800/5 ring-1 ring-zinc-900/5 dark:bg-zinc-800/90 dark:text-zinc-200 dark:ring-white/10"
+              className="flex items-center gap-2 rounded-lg bg-white/90 pt-2 pb-1 pl-5 pr-3 text-lg font-bold text-zinc-800 shadow-md shadow-zinc-800/5 ring-1 ring-zinc-900/5 dark:bg-zinc-800/90 dark:text-zinc-200 dark:ring-white/10"
               onClick={() => setIsOpen(!isOpen)}
             >
               Order
               <div
                 className={
                   open
-                    ? 'rotate-180 px-3 transition-transform duration-300 ease-in-out'
-                    : 'px-3 transition-transform duration-300 ease-in-out'
+                    ? 'rotate-180 transition-transform duration-300 ease-in-out'
+                    : 'transition-transform duration-300 ease-in-out'
                 }
               >
                 <DropdownSVG></DropdownSVG>
