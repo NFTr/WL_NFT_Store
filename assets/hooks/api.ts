@@ -1,18 +1,26 @@
 import useSWR from 'swr';
 import { fetcher } from '../utilities/fetcher';
 
-export function useCollection(collectionId: string, order?: string) {
-  if (order) {
-    order = `?order=${order}`;
-  } else {
-    order = '';
+function combineTerms(order?: string, search?: string) {
+  let term = '';
+  if (order || search) {
+    if (order && search) {
+      term = `?order=${order}&search=${search}`;
+    } else {
+      term = `?${order ? `order=${order}` : `search=${search}`}`;
+    }
   }
+  return term;
+}
+
+export function useCollection(collectionId: string, order?: string, search?: string) {
+  const term = combineTerms(order, search);
   const { data: collection, error, isLoading } = useSWR(`/api/collections/${collectionId}`, fetcher);
   const {
     data: collectionNfts,
     error: errorNfts,
     isLoading: isNftsLoading,
-  } = useSWR(`/api/collections/${collectionId}/nfts${order}`, fetcher);
+  } = useSWR(`/api/collections/${collectionId}/nfts${term}`, fetcher);
 
   if (isLoading || isNftsLoading) {
     return { isLoading: true };

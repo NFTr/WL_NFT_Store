@@ -6,11 +6,13 @@ import { Grid_G, Grid_K, List, TwitterSvg, WebsiteSvg } from '../../components/I
 import { useCollection } from '../../hooks/api';
 import { Order } from '../../components/Order';
 import { GridStyle } from '../../components/GridStyle';
+import { Search } from '../../components/Search';
 
 export const CollectionPage: React.FC = () => {
   const { id } = useParams();
   const [orderTerm, setOrderTerm] = useState('');
-  const { collection, nfts, isLoading, error } = useCollection(id || '', orderTerm);
+  const [searchTerm, setSearchTerm] = useState('');
+  const { collection, nfts, isLoading, error } = useCollection(id || '', orderTerm, searchTerm);
   const [gridStyle, setGridStyle] = useState('grid-compact');
 
   const getAttributeValue = (type: string): string | undefined => {
@@ -73,6 +75,7 @@ export const CollectionPage: React.FC = () => {
     <div>
       <div className="mb-2 flex items-start justify-between">
         <Order orderTerm={orderTerm} setOrderTerm={setOrderTerm}></Order>
+        <Search searchTerm={searchTerm} setSearchTerm={setSearchTerm}></Search>
         <GridStyle gridStyle={gridStyle} setGridStyle={setGridStyle}></GridStyle>
       </div>
       <Collection isLoading={isLoading} collectionNfts={nfts} gridStyle={gridStyle} />
