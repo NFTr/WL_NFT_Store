@@ -10,7 +10,7 @@ export const Searchbar: React.FC = () => {
   const fetcher = (url: string) => fetch(url).then((res) => res.json());
   const [searchTerm, setSearchTerm] = useState('');
   const [orderTerm, setOrderTerm] = useState<{ [key: string]: string }>({id: 'asc'});
-  const { nfts, collections, isLoading } = useSearch(searchTerm + orderTerm);
+  const { nfts, collections, isLoading } = useSearch(searchTerm, orderTerm);
 
   //   const { data: searchDids, isLoading: isLoadingDids } = useSWR(`/api/dids?search=${searchTerm}`, fetcher);
   const [gridStyle, setGridStyle] = React.useState('grid-compact');

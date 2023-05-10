@@ -79,14 +79,18 @@ export function useProfileNfts(
     data: createdData,
     error: createderrorNfts,
     isLoading: isLoadingCreatedNfts,
-  } = useSWR(`/api/dids/${didId}/created_nfts${createdOrderString}`, fetcher, { keepPreviousData: true });
+  } = useSWR(`/api/dids/${didId}/created_nfts${createdOrderString ? `?${createdOrderString}` : ''}`, fetcher, {
+    keepPreviousData: true,
+  });
 
   const createdNfts = createdData?.['hydra:member'] || [];
   const {
     data: ownedData,
     error: ownederrorNfts,
     isLoading: isLoadingOwnedNfts,
-  } = useSWR(`/api/dids/${didId}/owned_nfts${ownedOrderString}`, fetcher, { keepPreviousData: true });
+  } = useSWR(`/api/dids/${didId}/owned_nfts${ownedOrderString ? `?${ownedOrderString}` : ''}`, fetcher, {
+    keepPreviousData: true,
+  });
   const ownedNfts = ownedData?.['hydra:member'] || [];
 
   if (isLoadingCreatedNfts || isLoadingOwnedNfts) {
@@ -104,19 +108,20 @@ export function useProfileNfts(
   };
 }
 
-export function useSearch(searchTerm: string) {
+export function useSearch(searchTerm: string, order: { [key: string]: string }) {
+  const orderQueryString = createQueryString(order);
   const {
     data: dataNfts,
     isLoading: isLoadingNfts,
     error: errorNfts,
-  } = useSWR(`/api/nfts?search=${searchTerm}`, fetcher, { keepPreviousData: true });
+  } = useSWR(`/api/nfts?search=${searchTerm}&${orderQueryString}`, fetcher, { keepPreviousData: true });
   const nfts = dataNfts?.['hydra:member'] || [];
 
   const {
     data: dataCollections,
     isLoading: isLoadingCollections,
     error: errorCollections,
-  } = useSWR(`/api/collections?search=${searchTerm}`, fetcher, { keepPreviousData: true });
+  } = useSWR(`/api/collections?search=${searchTerm}&${orderQueryString}`, fetcher, { keepPreviousData: true });
   const collections = dataCollections?.['hydra:member'] || [];
 
   if (isLoadingNfts || isLoadingCollections) {
