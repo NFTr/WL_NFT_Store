@@ -1,18 +1,19 @@
-import React, { useState } from 'react';
+import React, {memo, useState} from 'react';
 import { useParams } from 'react-router';
 import { Collection } from '../../components/Collection';
 import { Container } from '../../components/Container';
 import { Grid_G, Grid_K, List, TwitterSvg, WebsiteSvg } from '../../components/Icons';
-import { useCollection } from '../../hooks/api';
+import {useCollection, useCollectionNfts} from '../../hooks/api';
 import { Order } from '../../components/Order';
 import { GridStyle } from '../../components/GridStyle';
 import { Search } from '../../components/Search';
 
 export const CollectionPage: React.FC = () => {
   const { id } = useParams();
-  const [orderTerm, setOrderTerm] = useState('');
+  const [orderTerm, setOrderTerm] = useState<{ [key: string]: string }>({id: 'asc'});
   const [searchTerm, setSearchTerm] = useState('');
-  const { collection, nfts, isLoading, error } = useCollection(id || '', orderTerm, searchTerm);
+  const { collection } = useCollection(id || '');
+  const { nfts, isLoading } = useCollectionNfts(id || '', orderTerm, searchTerm);
   const [gridStyle, setGridStyle] = useState('grid-compact');
 
   const getAttributeValue = (type: string): string | undefined => {

@@ -1,84 +1,130 @@
+import { useState } from 'react';
 import useSWR from 'swr';
 import { fetcher } from '../utilities/fetcher';
 
-function combineTerms(order?: string, search?: string) {
-  let term = '';
-  if (order || search) {
-    if (order && search) {
-      term = `?order=${order}&search=${search}`;
-    } else {
-      term = `?${order ? `order=${order}` : `search=${search}`}`;
-    }
+function createQueryString(order?: { [key: string]: string }, search?: string) {
+  const params = new URLSearchParams();
+
+  if (order) {
+    let [key, value] = Object.entries(order)[0];
+    params.set(`order[${key}]`, value);
   }
-  return term;
+
+  if (search) {
+    params.set('search', search);
+  }
+
+  return params.toString();
 }
 
-export function useCollection(collectionId: string, order?: string, search?: string) {
-  const term = combineTerms(order, search);
+export function useCollection(collectionId: string) {
   const { data: collection, error, isLoading } = useSWR(`/api/collections/${collectionId}`, fetcher);
+
+  if (isLoading) {
+    return { isLoading: true };
+  }
+
+  if (error) {
+    return { isLoading, error };
+  }
+
+  return { collection, error: undefined, isLoading: false };
+}
+
+export function useCollectionNfts(collectionId: string, order?: { [key: string]: string }, search?: string) {
+  const query = createQueryString(order, search);
   const {
     data: collectionNfts,
-    error: errorNfts,
-    isLoading: isNftsLoading,
-  } = useSWR(`/api/collections/${collectionId}/nfts${term}`, fetcher);
+    error,
+    isLoading,
+  } = useSWR(`/api/collections/${collectionId}/nfts${query ? `?${query}` : ''}`, fetcher, {
+    keepPreviousData: true,
+  });
+  const nfts = collectionNfts?.['hydra:member'] || [];
 
-  if (isLoading || isNftsLoading) {
-    return { isLoading: true };
+  if (isLoading) {
+    return { isLoading: true, nfts };
   }
 
-  if (error || errorNfts) {
-    return { isLoading, error: error || errorNfts };
+  if (error) {
+    return { isLoading, nfts, error };
   }
-  return { nfts: collectionNfts['hydra:member'], collection, error: undefined, isLoading: false };
+
+  return { nfts, error: undefined, isLoading: false };
 }
 
-export function useProfile(didId: string, createdOrder?: string, ownedOrder?: string) {
-  createdOrder ? (createdOrder = `?order=${createdOrder}`) : (createdOrder = '');
-  ownedOrder ? (ownedOrder = `?order=${ownedOrder}`) : (ownedOrder = '');
+export function useProfile(didId: string) {
   const { data: did, error, isLoading } = useSWR(`/api/dids/${didId}`, fetcher);
 
-  const {
-    data: createdNfts,
-    error: createderrorNfts,
-    isLoading: isLoadingCreatedNfts,
-  } = useSWR(`/api/dids/${didId}/created_nfts${createdOrder}`, fetcher);
-
-  const {
-    data: ownedNfts,
-    error: ownederrorNfts,
-    isLoading: isLoadingOwnedNfts,
-  } = useSWR(`/api/dids/${didId}/owned_nfts${ownedOrder}`, fetcher);
-
-  if (isLoading || isLoadingCreatedNfts || isLoadingOwnedNfts) {
+  if (isLoading) {
     return { isLoading: true };
   }
 
-  if (error || createderrorNfts || ownederrorNfts) {
-    return { isLoading, error: error || createderrorNfts || ownederrorNfts };
+  if (error) {
+    return { isLoading, error };
+  }
+
+  return { did, error: undefined, isLoading: false };
+}
+
+export function useProfileNfts(
+  didId: string,
+  createdOrder?: { [key: string]: string },
+  ownedOrder?: { [key: string]: string }
+) {
+  const createdOrderString = createQueryString(createdOrder);
+  const ownedOrderString = createQueryString(ownedOrder);
+
+  const {
+    data: createdData,
+    error: createderrorNfts,
+    isLoading: isLoadingCreatedNfts,
+  } = useSWR(`/api/dids/${didId}/created_nfts${createdOrderString}`, fetcher, { keepPreviousData: true });
+
+  const createdNfts = createdData?.['hydra:member'] || [];
+  const {
+    data: ownedData,
+    error: ownederrorNfts,
+    isLoading: isLoadingOwnedNfts,
+  } = useSWR(`/api/dids/${didId}/owned_nfts${ownedOrderString}`, fetcher, { keepPreviousData: true });
+  const ownedNfts = ownedData?.['hydra:member'] || [];
+
+  if (isLoadingCreatedNfts || isLoadingOwnedNfts) {
+    return { createdNfts, ownedNfts, isLoading: true };
+  }
+
+  if (createderrorNfts || ownederrorNfts) {
+    return { createdNfts, ownedNfts, isLoading: false, error: createderrorNfts || ownederrorNfts };
   }
   return {
-    createdNfts: createdNfts['hydra:member'],
-    ownedNfts: ownedNfts['hydra:member'],
-    did,
+    createdNfts,
+    ownedNfts,
     error: undefined,
     isLoading: false,
   };
 }
 
 export function useSearch(searchTerm: string) {
-  const { data: nfts, isLoading: isLoadingNfts, error: errorNfts } = useSWR(`/api/nfts?search=${searchTerm}`, fetcher);
   const {
-    data: collections,
+    data: dataNfts,
+    isLoading: isLoadingNfts,
+    error: errorNfts,
+  } = useSWR(`/api/nfts?search=${searchTerm}`, fetcher, { keepPreviousData: true });
+  const nfts = dataNfts?.['hydra:member'] || [];
+
+  const {
+    data: dataCollections,
     isLoading: isLoadingCollections,
     error: errorCollections,
-  } = useSWR(`/api/collections?search=${searchTerm}`, fetcher);
+  } = useSWR(`/api/collections?search=${searchTerm}`, fetcher, { keepPreviousData: true });
+  const collections = dataCollections?.['hydra:member'] || [];
 
   if (isLoadingNfts || isLoadingCollections) {
-    return { isLoading: true };
+    return { nfts, collections, isLoading: true };
   }
 
   if (errorNfts || errorCollections) {
-    return { isLoading: false, error: errorNfts || errorCollections };
+    return { nfts, collections, isLoading: false, error: errorNfts || errorCollections };
   }
-  return { nfts: nfts['hydra:member'], collections: collections['hydra:member'], error: undefined, isLoading: false };
+  return { nfts, collections, error: undefined, isLoading: false };
 }

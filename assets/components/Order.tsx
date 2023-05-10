@@ -2,18 +2,18 @@ import React, { Fragment, useState } from 'react';
 import { Menu, Transition } from '@headlessui/react';
 import { DropdownSVG } from './Icons';
 
-export const Order: React.FC<{ orderTerm: string; setOrderTerm: (term: string) => void }> = ({
+export const Order: React.FC<{ orderTerm: { [key: string]: string }; setOrderTerm: (term: { [key: string]: string }) => void }> = ({
   orderTerm,
   setOrderTerm,
 }) => {
   const [isOpen, setIsOpen] = useState(false);
   const orders = [
-    { set: () => setOrderTerm('&order%5Bid%5D=asc'), label: 'ID ascending' },
-    { set: () => setOrderTerm('&order%5Bid%5D=desc'), label: 'ID descending' },
-    { set: () => setOrderTerm('&order%5Bname%5D=asc'), label: 'Name ascending' },
-    { set: () => setOrderTerm('&order%5Bname%5D=desc'), label: 'Name descending' },
-    { set: () => setOrderTerm('&order%5BlowestSellOffer.xchPrice%5D=asc'), label: 'Price ascending' },
-    { set: () => setOrderTerm('&order%5%5BlowestSellOffer.xchPrice%5D=desc'), label: 'Price descending' },
+    { set: () => setOrderTerm({ id: 'asc' }), label: 'ID ascending' },
+    { set: () => setOrderTerm({ id: 'desc' }), label: 'ID descending' },
+    { set: () => setOrderTerm({ name: 'asc' }), label: 'Name ascending' },
+    { set: () => setOrderTerm({ name: 'desc' }), label: 'Name descending' },
+    { set: () => setOrderTerm({ 'lowestSellOffer.xchPrice': 'asc' }), label: 'Price ascending' },
+    { set: () => setOrderTerm({ 'lowestSellOffer.xchPrice': 'desc' }), label: 'Price descending' },
   ];
   return (
     <div className="relative z-10">
@@ -58,7 +58,7 @@ export const Order: React.FC<{ orderTerm: string; setOrderTerm: (term: string) =
                             }}
                             className={`${
                               active ? 'text-zinc-800 dark:text-zinc-200' : ' text-zinc-500 dark:text-zinc-400'
-                            }  py-2 text-lg  font-bold `}
+                            } cursor-pointer py-2 text-lg font-bold`}
                           >
                             {order.label}
                           </div>

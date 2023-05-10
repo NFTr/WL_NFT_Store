@@ -11,7 +11,7 @@ export const Collection: React.FC<{
   const loadingElements = Array.from({ length: limit || 12 }, (_, index) => index);
   const nftsToDisplay = limit && collectionNfts ? collectionNfts.slice(0, limit) : collectionNfts;
 
-  const gridElements = isLoading
+  const gridElements = isLoading && !(nftsToDisplay?.length > 0)
     ? loadingElements.map((index) => <NftCard key={index} gridStyle={gridStyle} />)
     : nftsToDisplay.map((nft: Nft) => <NftCard key={nft.id} nft={nft} gridStyle={gridStyle} />);
 

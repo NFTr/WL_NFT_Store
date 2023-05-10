@@ -2,15 +2,16 @@ import React, { useState } from 'react';
 import { useParams } from 'react-router';
 import { Collection } from '../../components/Collection';
 import { Container } from '../../components/Container';
-import { useProfile } from '../../hooks/api';
-import { Order } from '../../components/Order';
 import { GridStyle } from '../../components/GridStyle';
+import { Order } from '../../components/Order';
+import { useProfile, useProfileNfts } from '../../hooks/api';
 
 export const DIDPage: React.FC = () => {
   const { id } = useParams();
-  const [createdOrderTerm, setCreatedOrderTerm] = useState('');
-  const [ownedOrderTerm, setOwnedOrderTerm] = useState('');
-  const { did, createdNfts, ownedNfts, error, isLoading } = useProfile(id || '', createdOrderTerm, ownedOrderTerm);
+  const [createdOrderTerm, setCreatedOrderTerm] = useState<{ [key: string]: string }>({ id: 'asc' });
+  const [ownedOrderTerm, setOwnedOrderTerm] = useState<{ [key: string]: string }>({ id: 'asc' });
+  const { did, isLoading } = useProfile(id || '');
+  const { createdNfts, ownedNfts } = useProfileNfts(id || '', createdOrderTerm, ownedOrderTerm);
 
   const name = did?.name === null ? did?.encodedId : did?.name;
   const encodedId = did?.encodedId;

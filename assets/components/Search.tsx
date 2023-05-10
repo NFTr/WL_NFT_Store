@@ -1,7 +1,5 @@
-import React, { useState } from 'react';
-import { Collection } from './Collection';
-import { CollectionList } from './CollectionList';
-import { SearchSVG, DropdownSVG } from './Icons';
+import React from 'react';
+import { SearchSVG } from './Icons';
 
 export const Search: React.FC<{ searchTerm: string; setSearchTerm: (term: string) => void }> = ({
   searchTerm,

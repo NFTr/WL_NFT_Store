@@ -3,7 +3,7 @@ import useSWR from 'swr';
 import { Collection } from '../components/Collection';
 import { Container } from '../components/Container';
 import { Grid_G, Grid_K, List } from '../components/Icons';
-import { useCollection, useProfile } from '../hooks/api';
+import {useCollection, useCollectionNfts, useProfile, useProfileNfts} from '../hooks/api';
 import { fetcher } from '../utilities/fetcher';
 
 export const Browse: React.FC = () => {
@@ -13,7 +13,8 @@ export const Browse: React.FC = () => {
   const { data: browseContent, isLoading } = useSWR('/api/browseContent', fetcher);
 
   const BrowseCollection = ({ collectionId }: { collectionId: string }) => {
-    const { collection, nfts, isLoading, error } = useCollection(collectionId);
+    const { collection } = useCollection(collectionId);
+    const { nfts, isLoading, error } = useCollectionNfts(collectionId);
     if (error) {
       return <div>Error loading Collection</div>;
     }
@@ -24,7 +25,8 @@ export const Browse: React.FC = () => {
   };
 
   const BrowseProfile = ({ profileId }: { profileId: string }) => {
-    const { did, createdNfts, error, isLoading } = useProfile(profileId);
+    const { did, isLoading } = useProfile(profileId);
+    const { createdNfts, error } = useProfileNfts(profileId);
 
     if (error) {
       return <div>Error loading Profile NFTs</div>;
