@@ -37,7 +37,7 @@ class ImportNftsCommand extends Command
         $profiles = $this->params->get('app.profiles');
 
         foreach ($profiles as $profile) {
-            $this->nftAdapter->importNftsByCreatorId($profile);
+            $this->nftAdapter->importNftsByProfile($profile);
         }
 
         $collections = $this->params->get('app.collections');

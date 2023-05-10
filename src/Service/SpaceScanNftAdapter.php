@@ -62,29 +62,29 @@ class SpaceScanNftAdapter implements NftAdapter
      * @throws ServerExceptionInterface
      * @throws TransportExceptionInterface
      */
-    function importNftsByCreatorId(string $creatorId): array
+    function importNftsByProfile(string $profileId): array
     {
-        $this->logger->info("Fetching NFTs created by profile $creatorId");
+        $this->logger->info("Fetching NFTs created or owned by profile $profileId");
         $nfts = [];
         $page = 1;
         while (true) {
             $response = $this->client->request(
                 'GET',
-                "$this->baseUrl/1/xch/did/$creatorId?page=$page&count=100&type=nft"
+                "$this->baseUrl/1/xch/did/$profileId?page=$page&count=100&type=null"
             );
             $JsonResponse = json_decode($response->getContent());
-            $nftsToImport = $JsonResponse->created;
+            $nftsToImport = array_merge($JsonResponse->created, $JsonResponse->owned);
             $page += 1;
             if (sizeof($nftsToImport) == 0) {
                 break;
             }
 
-            $creator = $this->didRepository->find($creatorId);
-            if (!$creator) {
-                $creator = new Did();
-                $creator->setId($creatorId);
-                $creator->setEncodedId($this->puzzleHashConverter->encodePuzzleHash($creatorId, 'did:chia:'));
-                $this->didRepository->save($creator);
+            $profile = $this->didRepository->find($profileId);
+            if (!$profile) {
+                $profile = new Did();
+                $profile->setId($profileId);
+                $profile->setEncodedId($this->puzzleHashConverter->encodePuzzleHash($profileId, 'did:chia:'));
+                $this->didRepository->save($profile);
             }
 
             foreach ($nftsToImport as $nftToImport) {
@@ -156,7 +156,7 @@ class SpaceScanNftAdapter implements NftAdapter
                 $this->puzzleHashConverter->encodePuzzleHash($nftToImport->nft_info->royalty_puzzle_hash)
             );
 
-            $nft->setMintHeight($nftToImport->created_height);
+            $nft->setMintHeight($nftToImport->nft_info->mint_height);
             if (property_exists($nftToImport->nft_info, 'edition_number')
                 && property_exists($nftToImport->nft_info, 'edition_total')) {
                 $nft->setEditionNumber($nftToImport->nft_info->edition_number);
@@ -173,9 +173,17 @@ class SpaceScanNftAdapter implements NftAdapter
         $nft->setLicenseHash($nftToImport->nft_info->license_hash);
         $nft->setLicenseUris($nftToImport->nft_info->license_uris);
 
-        $nft->setName($nftToImport->meta_info->name);
-        $nft->setDescription($nftToImport->meta_info->description);
-        $nft->setAttributes($nftToImport->meta_info->attributes);
+        if ($nftToImport->meta_info) {
+            if (property_exists($nftToImport->meta_info, 'name')) {
+                $nft->setName($nftToImport->meta_info->name);
+            }
+            if (property_exists($nftToImport->meta_info, 'description')) {
+                $nft->setDescription($nftToImport->meta_info->description);
+            }
+            if (property_exists($nftToImport->meta_info, 'attributes')) {
+                $nft->setAttributes($nftToImport->meta_info->attributes);
+            }
+        }
 
         return $nft;
     }
@@ -193,7 +201,9 @@ class SpaceScanNftAdapter implements NftAdapter
                 $collection = new NftCollection();
                 $collection->setId($nftToImport->synthetic_id);
                 $collection->setName($nftToImport->meta_info->collection->name);
-                $collection->setAttributes($nftToImport->meta_info->collection->attributes);
+                if (property_exists($nftToImport->meta_info->collection, 'attributes')) {
+                    $collection->setAttributes($nftToImport->meta_info->collection->attributes);
+                }
                 $this->collectionRepository->save($collection);
             }
             $nft->setCollection($collection);
@@ -225,8 +235,9 @@ class SpaceScanNftAdapter implements NftAdapter
      */
     public function setOwnerAddressAndDid(mixed $nftToImport, Nft $nft): void
     {
-        if ($nftToImport->nft_info->owner_did) {
-            $owner = $this->getOrCreateDid($nftToImport->nft_info->owner_did);
+        if ($nftToImport->owner_did) {
+            $owner = $this->getOrCreateDid($nftToImport->owner_did);
+            print_r($nftToImport->owner_did);
             $nft->setOwner($owner);
         }
 

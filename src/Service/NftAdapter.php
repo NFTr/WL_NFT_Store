@@ -3,6 +3,6 @@
 namespace App\Service;
 
 interface NftAdapter {
-    function importNftsByCreatorId(string $creatorId);
+    function importNftsByProfile(string $profileId);
     function importNftsByCollection(string $collectionId);
 }
