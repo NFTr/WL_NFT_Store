@@ -11,6 +11,7 @@ import { Home } from './pages/Home';
 import { NftPage } from './pages/nfts/[id]';
 import { DIDPage } from './pages/profiles/[id]';
 import { Browse } from './pages/Browse';
+import { AddressPage } from './pages/addresses/[id]';
 
 const router = createBrowserRouter([
   {
@@ -61,6 +62,15 @@ const router = createBrowserRouter([
           {
             path: ':id',
             element: <DIDPage />,
+          },
+        ],
+      },
+      {
+        path: 'addresses',
+        children: [
+          {
+            path: ':id',
+            element: <AddressPage />,
           },
         ],
       },

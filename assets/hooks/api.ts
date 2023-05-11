@@ -67,6 +67,20 @@ export function useProfile(didId: string) {
   return { did, error: undefined, isLoading: false };
 }
 
+export function useAddress(id: string) {
+  const { data: address, error, isLoading } = useSWR(`/api/addresses/${id}`, fetcher);
+
+  if (isLoading) {
+    return { isLoading: true };
+  }
+
+  if (error) {
+    return { isLoading, error };
+  }
+
+  return { address, error: undefined, isLoading: false };
+}
+
 export function useProfileNfts(
   didId: string,
   createdOrder?: { [key: string]: string },
@@ -89,6 +103,47 @@ export function useProfileNfts(
     error: ownederrorNfts,
     isLoading: isLoadingOwnedNfts,
   } = useSWR(`/api/dids/${didId}/owned_nfts${ownedOrderString ? `?${ownedOrderString}` : ''}`, fetcher, {
+    keepPreviousData: true,
+  });
+  const ownedNfts = ownedData?.['hydra:member'] || [];
+
+  if (isLoadingCreatedNfts || isLoadingOwnedNfts) {
+    return { createdNfts, ownedNfts, isLoading: true };
+  }
+
+  if (createderrorNfts || ownederrorNfts) {
+    return { createdNfts, ownedNfts, isLoading: false, error: createderrorNfts || ownederrorNfts };
+  }
+  return {
+    createdNfts,
+    ownedNfts,
+    error: undefined,
+    isLoading: false,
+  };
+}
+
+export function useAddressNFTs(
+  id: string,
+  createdOrder?: { [key: string]: string },
+  ownedOrder?: { [key: string]: string }
+) {
+  const createdOrderString = createQueryString(createdOrder);
+  const ownedOrderString = createQueryString(ownedOrder);
+
+  const {
+    data: createdData,
+    error: createderrorNfts,
+    isLoading: isLoadingCreatedNfts,
+  } = useSWR(`/api/addresses/${id}/created_nfts${createdOrderString ? `?${createdOrderString}` : ''}`, fetcher, {
+    keepPreviousData: true,
+  });
+
+  const createdNfts = createdData?.['hydra:member'] || [];
+  const {
+    data: ownedData,
+    error: ownederrorNfts,
+    isLoading: isLoadingOwnedNfts,
+  } = useSWR(`/api/addresses/${id}/owned_nfts${ownedOrderString ? `?${ownedOrderString}` : ''}`, fetcher, {
     keepPreviousData: true,
   });
   const ownedNfts = ownedData?.['hydra:member'] || [];
