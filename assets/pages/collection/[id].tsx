@@ -1,19 +1,20 @@
-import React, {memo, useState} from 'react';
+import React, { useState } from 'react';
 import { useParams } from 'react-router';
 import { Collection } from '../../components/Collection';
 import { Container } from '../../components/Container';
-import { Grid_G, Grid_K, List, TwitterSvg, WebsiteSvg } from '../../components/Icons';
-import {useCollection, useCollectionNfts} from '../../hooks/api';
+import { TwitterSvg, WebsiteSvg } from '../../components/Icons';
+import { useCollection, useCollectionNfts } from '../../hooks/api';
 import { Order } from '../../components/Order';
 import { GridStyle } from '../../components/GridStyle';
 import { Search } from '../../components/Search';
 
 export const CollectionPage: React.FC = () => {
   const { id } = useParams();
-  const [orderTerm, setOrderTerm] = useState<{ [key: string]: string }>({id: 'asc'});
+  const [orderTerm, setOrderTerm] = useState<{ [key: string]: string }>({ id: 'asc' });
   const [searchTerm, setSearchTerm] = useState('');
   const { collection } = useCollection(id || '');
-  const { nfts, isLoading } = useCollectionNfts(id || '', orderTerm, searchTerm);
+  const [nftPage, setNftPage] = useState(1);
+  const { nfts, isLoading, error, totalPages } = useCollectionNfts(id || '', orderTerm, searchTerm, nftPage);
   const [gridStyle, setGridStyle] = useState('grid-compact');
 
   const getAttributeValue = (type: string): string | undefined => {
@@ -53,7 +54,7 @@ export const CollectionPage: React.FC = () => {
           </div>
         </div>
 
-        <div className="w-full -translate-x-10 dark:text-white/90 sm:w-8/12 sm:translate-x-0">
+        <div className="w-full -translate-x-10 dark:text-white/90 sm:w-8/12 sm:translate-x-0" id="grid">
           <div className="mt-4 text-5xl font-bold sm:text-4xl lg:text-6xl">{collection?.name}</div>
           <div className="mt-4 text-sm sm:text-sm lg:text-base xl:text-lg">{description}</div>
           <div className="mt-6 grid grid-cols-2 justify-items-center sm:hidden">
@@ -80,6 +81,28 @@ export const CollectionPage: React.FC = () => {
         <GridStyle gridStyle={gridStyle} setGridStyle={setGridStyle}></GridStyle>
       </div>
       <Collection isLoading={isLoading} collectionNfts={nfts} gridStyle={gridStyle} />
+      <div className="mt-6 flex w-full justify-center gap-3">
+        {nftPage > 1 ? (
+          <a href="#grid">
+            <button
+              onClick={() => setNftPage(nftPage - 1)}
+              className="rounded-lg bg-white/90 py-2 px-4 text-xl font-bold text-zinc-800 shadow-md shadow-zinc-800/5 ring-1 ring-zinc-900/5 hover:bg-slate-200 dark:bg-zinc-800/90 dark:text-zinc-200 dark:ring-white/10 dark:hover:bg-zinc-600"
+            >
+              Previous Page
+            </button>
+          </a>
+        ) : null}
+        {totalPages && nftPage < totalPages ? (
+          <a href="#grid">
+            <button
+              onClick={() => setNftPage(nftPage + 1)}
+              className="rounded-lg bg-white/90 py-2 px-4 text-xl font-bold text-zinc-800 shadow-md shadow-zinc-800/5 ring-1 ring-zinc-900/5 hover:bg-slate-200 dark:bg-zinc-800/90 dark:text-zinc-200 dark:ring-white/10 dark:hover:bg-zinc-600"
+            >
+              Next Page
+            </button>
+          </a>
+        ) : null}
+      </div>
     </div>
   );
   return (

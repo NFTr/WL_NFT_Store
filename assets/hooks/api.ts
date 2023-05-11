@@ -2,7 +2,7 @@ import { useState } from 'react';
 import useSWR from 'swr';
 import { fetcher } from '../utilities/fetcher';
 
-function createQueryString(order?: { [key: string]: string }, search?: string) {
+function createQueryString(order?: { [key: string]: string }, search?: string, page?: number) {
   const params = new URLSearchParams();
 
   if (order) {
@@ -12,6 +12,10 @@ function createQueryString(order?: { [key: string]: string }, search?: string) {
 
   if (search) {
     params.set('search', search);
+  }
+
+  if (page) {
+    params.set('page', page.toString());
   }
 
   return params.toString();
@@ -31,8 +35,13 @@ export function useCollection(collectionId: string) {
   return { collection, error: undefined, isLoading: false };
 }
 
-export function useCollectionNfts(collectionId: string, order?: { [key: string]: string }, search?: string) {
-  const query = createQueryString(order, search);
+export function useCollectionNfts(
+  collectionId: string,
+  order?: { [key: string]: string },
+  search?: string,
+  page?: number
+) {
+  const query = createQueryString(order, search, page);
   const {
     data: collectionNfts,
     error,
@@ -41,6 +50,7 @@ export function useCollectionNfts(collectionId: string, order?: { [key: string]:
     keepPreviousData: true,
   });
   const nfts = collectionNfts?.['hydra:member'] || [];
+  const totalPages = parseInt(collectionNfts?.['hydra:view']['hydra:last'].match(/page=(\d+)/)[1], 10) || [];
 
   if (isLoading) {
     return { isLoading: true, nfts };
@@ -50,7 +60,7 @@ export function useCollectionNfts(collectionId: string, order?: { [key: string]:
     return { isLoading, nfts, error };
   }
 
-  return { nfts, error: undefined, isLoading: false };
+  return { nfts, error: undefined, isLoading: false, totalPages };
 }
 
 export function useProfile(didId: string) {
