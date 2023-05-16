@@ -102,7 +102,7 @@ class MintGardenNftAdapter implements NftAdapter
             }
 
             // Sleep for 500ms to not run into rate limiting
-            usleep(500000);
+            usleep(50000);
         }
     }
 
@@ -113,7 +113,7 @@ class MintGardenNftAdapter implements NftAdapter
         } elseif ($event == 1) {
             return 'transfer';
         } elseif ($event == 2) {
-            return 'sale';
+            return 'trade';
         } elseif ($event == 3) {
             return 'burn';
         }

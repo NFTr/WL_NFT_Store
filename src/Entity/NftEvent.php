@@ -9,13 +9,9 @@ use Doctrine\ORM\Mapping as ORM;
 #[ORM\Entity(repositoryClass: NftEventRepository::class)]
 class NftEvent
 {
-    #[ORM\Id]
-    #[ORM\GeneratedValue]
-    #[ORM\Column]
-    private ?int $id = null;
-
     #[ORM\ManyToOne(cascade: ['persist'], inversedBy: 'events')]
     #[ORM\JoinColumn(nullable: false)]
+    #[ORM\Id]
     private ?Nft $nft = null;
 
     #[ORM\Column(length: 255)]
@@ -35,6 +31,7 @@ class NftEvent
     private ?Address $address = null;
 
     #[ORM\Column]
+    #[ORM\Id]
     private ?int $event_index = null;
 
     public function getId(): ?int
