@@ -173,9 +173,13 @@ class Nft
     #[Groups('nft:collection:get')]
     private ?Offer $lowestSellOffer = null;
 
+    #[ORM\OneToMany(mappedBy: 'nft', targetEntity: NftEvent::class, orphanRemoval: true)]
+    private Collection $events;
+
     public function __construct()
     {
         $this->offers = new ArrayCollection();
+        $this->events = new ArrayCollection();
     }
 
     public function getId(): ?string
@@ -513,6 +517,36 @@ class Nft
     public function setLowestSellOffer(?Offer $lowestSellOffer): self
     {
         $this->lowestSellOffer = $lowestSellOffer;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, NftEvent>
+     */
+    public function getEvents(): Collection
+    {
+        return $this->events;
+    }
+
+    public function addEvent(NftEvent $event): self
+    {
+        if (!$this->events->contains($event)) {
+            $this->events->add($event);
+            $event->setNft($this);
+        }
+
+        return $this;
+    }
+
+    public function removeEvent(NftEvent $event): self
+    {
+        if ($this->events->removeElement($event)) {
+            // set the owning side to null (unless already changed)
+            if ($event->getNft() === $this) {
+                $event->setNft(null);
+            }
+        }
 
         return $this;
     }

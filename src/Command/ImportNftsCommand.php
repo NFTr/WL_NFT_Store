@@ -2,7 +2,9 @@
 
 namespace App\Command;
 
+use App\Service\MintGardenNftAdapter;
 use App\Service\NftAdapter;
+use App\Service\SpaceScanNftAdapter;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
@@ -15,13 +17,18 @@ use Symfony\Component\DependencyInjection\ParameterBag\ContainerBagInterface;
 )]
 class ImportNftsCommand extends Command
 {
-    private NftAdapter $nftAdapter;
+    private SpaceScanNftAdapter $nftAdapter;
     private ContainerBagInterface $params;
+    private MintGardenNftAdapter $mgNftAdapter;
 
-    public function __construct(NftAdapter $nftAdapter, ContainerBagInterface $params)
-    {
+    public function __construct(
+        SpaceScanNftAdapter $nftAdapter,
+        MintGardenNftAdapter $mgNftAdapter,
+        ContainerBagInterface $params
+    ) {
         $this->nftAdapter = $nftAdapter;
         $this->params = $params;
+        $this->mgNftAdapter = $mgNftAdapter;
 
         parent::__construct();
     }
@@ -37,13 +44,14 @@ class ImportNftsCommand extends Command
         $profiles = $this->params->get('app.profiles');
 
         foreach ($profiles as $profile) {
-            $this->nftAdapter->importNftsByProfile($profile);
+//            $this->nftAdapter->importNftsByProfile($profile);
         }
 
         $collections = $this->params->get('app.collections');
 
         foreach ($collections as $collection) {
-            $this->nftAdapter->importNftsByCollection($collection);
+//            $this->nftAdapter->importNftsByCollection($collection);
+            $this->mgNftAdapter->importNftProvenanceByCollection($collection);
         }
 
         return Command::SUCCESS;

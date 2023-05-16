@@ -284,4 +284,9 @@ class SpaceScanNftAdapter implements NftAdapter
 
         return $address;
     }
+
+    public function importNftProvenanceByCollection(string $collectionId)
+    {
+        // TODO: Implement importNftProvenanceByCollection() method.
+    }
 }

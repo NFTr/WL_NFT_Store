@@ -6,6 +6,7 @@
 parameters:
   app.sources.spacescan.base: https://api2.spacescan.io
   app.sources.dexie.base: https://api.dexie.space/v1
+  app.sources.mintgarden.base: https://api.mintgarden.io
 
 imports:
   - { resource: './chia.yaml' }
@@ -30,6 +31,9 @@ services:
   App\Service\SpaceScanNftAdapter:
     arguments:
       $baseUrl: '%app.sources.spacescan.base%'
+  App\Service\MintGardenNftAdapter:
+    arguments:
+      $baseUrl: '%app.sources.mintgarden.base%'
   App\Service\DexieOfferAdapter:
     arguments:
       $baseUrl: '%app.sources.dexie.base%'
