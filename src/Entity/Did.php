@@ -14,6 +14,7 @@ use ApiPlatform\Metadata\ApiFilter;
 use ApiPlatform\Doctrine\Orm\Filter\SearchFilter;
 use App\Filter\MultipleFieldsSearchFilter;
 use ApiPlatform\Doctrine\Orm\Filter\OrderFilter;
+use Symfony\Component\Serializer\Annotation\Groups;
 
 #[ORM\Entity(repositoryClass: DidRepository::class)]
 #[ApiResource(
@@ -30,12 +31,15 @@ class Did
 {
     #[ORM\Id]
     #[ORM\Column(length: 255)]
+    #[Groups('nft:get')]
     private ?string $id = null;
 
     #[ORM\Column(length: 255)]
+    #[Groups('nft:get')]
     private ?string $encodedId = null;
 
     #[ORM\Column(type: Types::TEXT, nullable: true)]
+    #[Groups('nft:get')]
     private ?string $name = null;
 
     #[ORM\OneToMany(mappedBy: 'creator', targetEntity: Nft::class)]

@@ -2,18 +2,18 @@
 
 namespace App\Entity;
 
+use ApiPlatform\Doctrine\Orm\Filter\OrderFilter;
+use ApiPlatform\Metadata\ApiFilter;
 use ApiPlatform\Metadata\ApiResource;
 use ApiPlatform\Metadata\Get;
 use ApiPlatform\Metadata\GetCollection;
+use App\Filter\MultipleFieldsSearchFilter;
 use App\Repository\AddressRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
-use ApiPlatform\Metadata\ApiFilter;
-use ApiPlatform\Doctrine\Orm\Filter\SearchFilter;
-use App\Filter\MultipleFieldsSearchFilter;
-use ApiPlatform\Doctrine\Orm\Filter\OrderFilter;
+use Symfony\Component\Serializer\Annotation\Groups;
 
 #[ORM\Entity(repositoryClass: AddressRepository::class)]
 #[ApiResource(
@@ -30,12 +30,15 @@ class Address
 {
     #[ORM\Id]
     #[ORM\Column(length: 255)]
+    #[Groups('nft:get')]
     private ?string $id = null;
 
     #[ORM\Column(length: 255)]
+    #[Groups('nft:get')]
     private ?string $encodedAddress = null;
 
     #[ORM\Column(type: Types::TEXT, nullable: true)]
+    #[Groups('nft:get')]
     private ?string $name = null;
 
     #[ORM\OneToMany(mappedBy: 'creatorAddress', targetEntity: Nft::class)]

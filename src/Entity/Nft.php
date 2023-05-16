@@ -20,7 +20,7 @@ use Symfony\Component\Serializer\Annotation\Groups;
 #[ORM\Entity(repositoryClass: NftRepository::class)]
 #[ApiResource(
     operations: [
-        new Get(),
+        new Get(normalizationContext: ['groups' => 'nft:get']),
         new GetCollection(normalizationContext: ['groups' => 'nft:collection:get'])
     ]
 )]
@@ -89,81 +89,103 @@ class Nft
 {
     #[ORM\Id]
     #[ORM\Column(length: 255)]
-    #[Groups('nft:collection:get')]
+    #[Groups(['nft:get', 'nft:collection:get'])]
     private ?string $id = null;
 
     #[ORM\Column(length: 255)]
+    #[Groups('nft:get')]
     private ?string $launcherId = null;
 
     #[ORM\Column(type: Types::TEXT, nullable: true)]
-    #[Groups('nft:collection:get')]
+    #[Groups(['nft:get', 'nft:collection:get'])]
     private ?string $name = null;
 
     #[ORM\Column(type: Types::TEXT, nullable: true)]
+    #[Groups('nft:get')]
     private ?string $description = null;
 
     #[ORM\Column(nullable: true)]
+    #[Groups('nft:get')]
     private ?int $royaltyPercentage = null;
 
     #[ORM\Column(length: 255, nullable: true)]
+    #[Groups('nft:get')]
     private ?string $royaltyAddress = null;
 
     #[ORM\Column]
+    #[Groups('nft:get')]
     private array $dataUris = [];
 
     #[ORM\Column(length: 255)]
+    #[Groups('nft:get')]
     private ?string $dataHash = null;
 
     #[ORM\Column]
+    #[Groups('nft:get')]
     private array $metaUris = [];
 
     #[ORM\Column(length: 255)]
+    #[Groups('nft:get')]
     private ?string $metaHash = null;
 
     #[ORM\Column]
+    #[Groups('nft:get')]
     private array $licenseUris = [];
 
     #[ORM\Column(length: 255)]
+    #[Groups('nft:get')]
     private ?string $licenseHash = null;
 
     #[ORM\Column(nullable: true)]
+    #[Groups('nft:get')]
     private ?int $editionNumber = null;
 
     #[ORM\Column(nullable: true)]
+    #[Groups('nft:get')]
     private ?int $editionTotal = null;
 
     #[ORM\Column(nullable: true)]
+    #[Groups('nft:get')]
     private ?int $seriesNumber = null;
 
     #[ORM\Column(nullable: true)]
+    #[Groups('nft:get')]
     private ?int $seriesTotal = null;
 
     #[ORM\Column(nullable: true)]
+    #[Groups('nft:get')]
     private array $attributes = [];
 
     #[ORM\Column]
+    #[Groups('nft:get')]
     private ?int $mintHeight = null;
 
     #[ORM\ManyToOne(inversedBy: 'nfts')]
+    #[Groups('nft:get')]
     private ?NftCollection $collection = null;
 
     #[ORM\Column(type: Types::TEXT, nullable: true)]
-    #[Groups('nft:collection:get')]
+    #[Groups(['nft:get', 'nft:collection:get'])]
     private ?string $thumbnailUri = null;
 
     #[ORM\Column(type: Types::TEXT, nullable: true)]
+    #[Groups('nft:get')]
     private ?string $previewUri = null;
 
     #[ORM\ManyToOne(inversedBy: 'createdNfts')]
+    #[Groups('nft:get')]
     private ?Did $creator = null;
 
     #[ORM\ManyToOne(inversedBy: 'ownedNfts')]
+    #[Groups('nft:get')]
     private ?Did $owner = null;
 
     #[ORM\ManyToOne(inversedBy: 'createdNfts')]
+    #[Groups('nft:get')]
     private ?Address $creatorAddress = null;
 
     #[ORM\ManyToOne(inversedBy: 'ownedNfts')]
+    #[Groups('nft:get')]
     private ?Address $ownerAddress = null;
 
     #[ORM\ManyToMany(targetEntity: Offer::class, mappedBy: 'nfts')]
@@ -174,6 +196,7 @@ class Nft
     private ?Offer $lowestSellOffer = null;
 
     #[ORM\OneToMany(mappedBy: 'nft', targetEntity: NftEvent::class, orphanRemoval: true)]
+    #[Groups('nft:get')]
     private Collection $events;
 
     public function __construct()
