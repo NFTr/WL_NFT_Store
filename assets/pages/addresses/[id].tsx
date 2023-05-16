@@ -13,7 +13,7 @@ export const AddressPage: React.FC = () => {
   const { address, isLoading } = useAddress(id || '');
   const { createdNfts, ownedNfts } = useAddressNFTs(id || '', createdOrderTerm, ownedOrderTerm);
 
-  const encodedId = address?.encodedId;
+  const encodedAddress = address?.encodedAddress;
 
   const [createdgridStyle, setCreatedGridStyle] = React.useState('grid-compact');
   const [ownedgridStyle, setOwnedGridStyle] = React.useState('grid-compact');
@@ -23,7 +23,7 @@ export const AddressPage: React.FC = () => {
       <div>Loading...</div>
     ) : (
       <div className="sm:mb-5">
-        <div className="text-center text-2xl font-bold dark:text-white/90">{encodedId}</div>
+        <div className="text-center text-2xl font-mono tracking-tighter dark:text-white/90">{encodedAddress}</div>
       </div>
     );
   const renderCreatedGallery = () =>
