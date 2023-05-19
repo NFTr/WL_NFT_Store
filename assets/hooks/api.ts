@@ -50,7 +50,9 @@ export function useCollectionNfts(
     keepPreviousData: true,
   });
   const nfts = collectionNfts?.['hydra:member'] || [];
-  const totalPages = parseInt(collectionNfts?.['hydra:view']['hydra:last'].match(/page=(\d+)/)[1], 10) || [];
+  const hydraView = collectionNfts?.['hydra:view'];
+  const totalPages =
+    hydraView && hydraView['hydra:last'] ? parseInt(hydraView['hydra:last'].match(/page=(\d+)/)[1], 10) : [];
 
   if (isLoading) {
     return { isLoading: true, nfts };
