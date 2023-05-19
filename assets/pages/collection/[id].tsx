@@ -16,9 +16,14 @@ export const CollectionPage: React.FC = () => {
   const [nftPage, setNftPage] = useState(1);
   const { nfts, isLoading, error, totalPages } = useCollectionNfts(id || '', orderTerm, searchTerm, nftPage);
   const [gridStyle, setGridStyle] = useState('grid-compact');
+  const [loadedNfts, setLoadedNfts] = useState<any[]>([]);
 
   const getAttributeValue = (type: string): string | undefined => {
     return collection?.attributes.find((attributes: { type: string }) => attributes.type === type)?.value;
+  };
+
+  const loadMoreNfts = () => {
+    setNftPage(nftPage + 1);
   };
 
   const bannerUrl = getAttributeValue('banner');
@@ -80,31 +85,26 @@ export const CollectionPage: React.FC = () => {
         <Search searchTerm={searchTerm} setSearchTerm={setSearchTerm}></Search>
         <GridStyle gridStyle={gridStyle} setGridStyle={setGridStyle}></GridStyle>
       </div>
-      <Collection isLoading={isLoading} collectionNfts={nfts} gridStyle={gridStyle} />
-      <div className="mt-6 flex w-full justify-center gap-3">
-        {nftPage > 1 ? (
-          <a href="#grid">
-            <button
-              onClick={() => setNftPage(nftPage - 1)}
-              className="rounded-lg bg-white/90 py-2 px-4 text-xl font-bold text-zinc-800 shadow-md shadow-zinc-800/5 ring-1 ring-zinc-900/5 hover:bg-slate-200 dark:bg-zinc-800/90 dark:text-zinc-200 dark:ring-white/10 dark:hover:bg-zinc-600"
-            >
-              Previous Page
-            </button>
-          </a>
-        ) : null}
-        {totalPages && nftPage < totalPages ? (
-          <a href="#grid">
-            <button
-              onClick={() => setNftPage(nftPage + 1)}
-              className="rounded-lg bg-white/90 py-2 px-4 text-xl font-bold text-zinc-800 shadow-md shadow-zinc-800/5 ring-1 ring-zinc-900/5 hover:bg-slate-200 dark:bg-zinc-800/90 dark:text-zinc-200 dark:ring-white/10 dark:hover:bg-zinc-600"
-            >
-              Next Page
-            </button>
-          </a>
-        ) : null}
-      </div>
+      <Collection isLoading={isLoading} collectionNfts={loadedNfts} gridStyle={gridStyle} />
+      {totalPages && nftPage < totalPages ? (
+        <div className="mt-6 flex w-full justify-center">
+          <button
+            onClick={loadMoreNfts}
+            className="rounded-lg bg-white/90 py-2 px-4 text-xl font-bold text-zinc-800 shadow-md shadow-zinc-800/5 ring-1 ring-zinc-900/5 hover:bg-slate-200 dark:bg-zinc-800/90 dark:text-zinc-200 dark:ring-white/10 dark:hover:bg-zinc-600"
+          >
+            Load More
+          </button>
+        </div>
+      ) : null}
     </div>
   );
+
+  React.useEffect(() => {
+    if (nfts.length > 0) {
+      setLoadedNfts([...loadedNfts, ...nfts]);
+    }
+  }, [nfts]);
+
   return (
     <>
       <Container className="my-8">
