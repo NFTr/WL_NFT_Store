@@ -101,9 +101,13 @@ export const CollectionPage: React.FC = () => {
 
   React.useEffect(() => {
     if (nfts.length > 0) {
-      setLoadedNfts([...loadedNfts, ...nfts]);
+      const uniqueNfts = nfts.filter((nft: { id: any }) => !loadedNfts.some((loadedNft) => loadedNft.id === nft.id));
+      setLoadedNfts([...loadedNfts, ...uniqueNfts]);
     }
-  }, [nfts]);
+    if (searchTerm !== '') {
+      setLoadedNfts(nfts);
+    }
+  }, [nfts, searchTerm]);
 
   return (
     <>
