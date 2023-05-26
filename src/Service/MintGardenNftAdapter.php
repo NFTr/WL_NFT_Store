@@ -65,10 +65,9 @@ class MintGardenNftAdapter implements NftAdapter
 
     }
 
-    public function importNftProvenanceByCollection(string $collectionId)
+    public function importNftProvenanceForAllNfts(): void
     {
-        $collection = $this->collectionRepository->find($collectionId);
-        $nfts = $this->nftRepository->findBy(array('collection' => $collection));
+        $nfts = $this->nftRepository->findAll();
         foreach ($nfts as $nft) {
             $id = $nft->getId();
             $existingEvents = $nft->getEvents();
