@@ -96,7 +96,7 @@ class MintGardenNftAdapter implements NftAdapter
 
                 if (!in_array($event, array_column($existingEvents->toArray(), 'id'))) {
                     $event->setNft($nft);
-                    $this->nftEventRepository->save($event, true);
+                    $this->entityManager->persist($event);
                 }
             }
 
