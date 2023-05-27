@@ -95,7 +95,7 @@ class SpaceScanNftAdapter implements NftAdapter
 
                 $this->setMinterAddressAndDid($nftToImport, $nft);
                 $this->setOwnerAddressAndDid($nftToImport, $nft);
-                $this->setCollection($nftToImport, $nft, true);
+                $this->setCollection($nftToImport, $nft, $nftToImport->minter_did != $profileId);
 
                 $this->nftRepository->save($nft, true);
                 $nfts[] = $nft;
