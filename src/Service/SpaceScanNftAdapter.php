@@ -95,7 +95,7 @@ class SpaceScanNftAdapter implements NftAdapter
 
                 $this->setMinterAddressAndDid($nftToImport, $nft);
                 $this->setOwnerAddressAndDid($nftToImport, $nft);
-                $this->setCollection($nftToImport, $nft);
+                $this->setCollection($nftToImport, $nft, true);
 
                 $this->nftRepository->save($nft, true);
                 $nfts[] = $nft;
@@ -135,7 +135,7 @@ class SpaceScanNftAdapter implements NftAdapter
 
                 $this->setMinterAddressAndDid($nftToImport, $nft);
                 $this->setOwnerAddressAndDid($nftToImport, $nft);
-                $this->setCollection($nftToImport, $nft);
+                $this->setCollection($nftToImport, $nft, false);
 
                 $this->nftRepository->save($nft);
             }
@@ -193,13 +193,14 @@ class SpaceScanNftAdapter implements NftAdapter
      * @param Nft $nft
      * @return void
      */
-    public function setCollection(mixed $nftToImport, Nft $nft): void
+    public function setCollection(mixed $nftToImport, Nft $nft, bool $isExternal): void
     {
         if ($nftToImport->synthetic_id) {
             $collection = $this->collectionRepository->find($nftToImport->synthetic_id);
             if (!$collection) {
                 $collection = new NftCollection();
                 $collection->setId($nftToImport->synthetic_id);
+                $collection->setExternal($isExternal);
                 $collection->setName($nftToImport->meta_info->collection->name);
                 if (property_exists($nftToImport->meta_info->collection, 'attributes')) {
                     $collection->setAttributes($nftToImport->meta_info->collection->attributes);

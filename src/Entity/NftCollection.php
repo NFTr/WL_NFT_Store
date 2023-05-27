@@ -2,19 +2,19 @@
 
 namespace App\Entity;
 
+use ApiPlatform\Doctrine\Orm\Filter\BooleanFilter;
+use ApiPlatform\Doctrine\Orm\Filter\OrderFilter;
+use ApiPlatform\Metadata\ApiFilter;
 use ApiPlatform\Metadata\ApiResource;
 use ApiPlatform\Metadata\Get;
 use ApiPlatform\Metadata\GetCollection;
+use App\Filter\MultipleFieldsSearchFilter;
 use App\Repository\NftCollectionRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation\Groups;
-use ApiPlatform\Metadata\ApiFilter;
-use ApiPlatform\Doctrine\Orm\Filter\SearchFilter;
-use App\Filter\MultipleFieldsSearchFilter;
-use ApiPlatform\Doctrine\Orm\Filter\OrderFilter;
 
 #[ORM\Entity(repositoryClass: NftCollectionRepository::class)]
 #[ApiResource(
@@ -28,6 +28,7 @@ use ApiPlatform\Doctrine\Orm\Filter\OrderFilter;
 #[ApiFilter(MultipleFieldsSearchFilter::class, properties: [
     'id' => 'exact', 'name' => 'partial'])]
 #[ApiFilter(OrderFilter::class, properties: ['id', 'name'], arguments: ['orderParameterName' => 'order'])]
+#[ApiFilter(BooleanFilter::class, properties: ['external'])]
 
 class NftCollection
 {
@@ -50,6 +51,9 @@ class NftCollection
 
     #[ORM\OneToMany(mappedBy: 'collection', targetEntity: Nft::class)]
     private Collection $nfts;
+
+    #[ORM\Column]
+    private ?bool $external = null;
 
     public function __construct()
     {
@@ -130,6 +134,18 @@ class NftCollection
                 $nft->setCollection(null);
             }
         }
+
+        return $this;
+    }
+
+    public function isExternal(): ?bool
+    {
+        return $this->external;
+    }
+
+    public function setExternal(bool $external): self
+    {
+        $this->external = $external;
 
         return $this;
     }

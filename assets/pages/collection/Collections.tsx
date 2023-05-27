@@ -6,7 +6,7 @@ import { fetcher } from '../../utilities/fetcher';
 import { GridStyle } from '../../components/GridStyle';
 
 export const Collections: React.FC = () => {
-  const { data: collections, error, isLoading } = useSWR(`/api/collections`, fetcher);
+  const { data: collections, error, isLoading } = useSWR(`/api/collections?external=0`, fetcher);
 
   const [gridStyle, setGridStyle] = React.useState('grid-compact');
 
@@ -24,7 +24,6 @@ export const Collections: React.FC = () => {
   return (
     <>
       <Container className="my-16 sm:mt-32">
-        {/*<div>{renderHeader()}</div>*/}
         <div>{renderGallery()}</div>
       </Container>
     </>
