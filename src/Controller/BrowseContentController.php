@@ -28,11 +28,11 @@ class BrowseContentController extends AbstractController
     public function index(): Response
     {
         try {
-            $browseContent1 = $this->params->get('app.collections');
-            $browseContent2 = $this->params->get('app.profiles');
+            $collections = $this->params->get('app.collections');
+            $profiles = $this->params->get('app.profiles');
             $responseData = [
-                'collections' => $browseContent1,
-                'profiles' => $browseContent2
+                'collections' => $collections,
+                'profiles' => $profiles
             ];
             $response = new JsonResponse();
             $response->setData($responseData);

@@ -5,7 +5,7 @@ import { Container } from '../../components/Container';
 import { fetcher } from '../../utilities/fetcher';
 import { GridStyle } from '../../components/GridStyle';
 
-export const Collections: React.FC = () => {
+export const CollectionsPage: React.FC = () => {
   const { data: collections, error, isLoading } = useSWR(`/api/collections?external=0`, fetcher);
 
   const [gridStyle, setGridStyle] = React.useState('grid-compact');

@@ -5,7 +5,7 @@ import { App } from './App';
 import './app.css';
 import { About } from './pages/About';
 import { CollectionPage } from './pages/collection/[id]';
-import { Collections } from './pages/collection/Collections';
+import { CollectionsPage } from './pages/collection';
 import { Gallery } from './pages/Gallery';
 import { Home } from './pages/Home';
 import { NftPage } from './pages/nfts/[id]';
@@ -37,7 +37,7 @@ const router = createBrowserRouter([
       },
       {
         path: 'collections',
-        element: <Collections />,
+        element: <CollectionsPage />,
       },
       {
         path: 'collections',
