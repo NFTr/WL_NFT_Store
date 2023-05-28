@@ -34,11 +34,11 @@ class ImportOffersCommand extends Command
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
 
-//        $profiles = $this->params->get('app.profiles');
-//
-//        foreach ($profiles as $profile) {
-//            $this->nftAdapter->importNftsByCreatorId($profile);
-//        }
+        $profiles = $this->params->get('app.profiles');
+
+        foreach ($profiles as $profile) {
+            $this->offerAdapter->importOffersByProfile($profile);
+        }
 
         $collections = $this->params->get('app.collections');
 

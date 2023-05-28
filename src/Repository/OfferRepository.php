@@ -40,20 +40,18 @@ class OfferRepository extends ServiceEntityRepository
         }
     }
 
-//    /**
-//     * @return Offer[] Returns an array of Offer objects
-//     */
-//    public function findByExampleField($value): array
-//    {
-//        return $this->createQueryBuilder('o')
-//            ->andWhere('o.exampleField = :val')
-//            ->setParameter('val', $value)
-//            ->orderBy('o.id', 'ASC')
-//            ->setMaxResults(10)
-//            ->getQuery()
-//            ->getResult()
-//        ;
-//    }
+    public function findNewestOfferForNft($id, string $orderBy): ?Offer
+    {
+        return $this->createQueryBuilder('o')
+            ->join('o.nfts', 'n')
+            ->andWhere('n.id = :val')
+            ->andWhere(sprintf('o.%s is not null', $orderBy))
+            ->setParameter('val', $id)
+            ->setMaxResults(1)
+            ->orderBy('o.' . $orderBy, 'desc')
+            ->getQuery()
+            ->getOneOrNullResult();
+    }
 
     public function findNewestOfferForCollection($collectionId, string $orderBy): ?Offer
     {
