@@ -7,8 +7,8 @@ security:
         users_in_memory:
             memory:
                 users:
-                    - identifier: '%env(HTTP_BASIC_AUTH_USERNAME)%'
-                      password: '%env(HTTP_BASIC_AUTH_PASSWORD)%'
+                    - identifier: '%env(ADMIN_USERNAME)%'
+                      password: '%env(ADMIN_PASSWORD)%'
                       roles: [ ROLE_ADMIN ]
     firewalls:
         dev:

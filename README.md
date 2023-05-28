@@ -20,6 +20,8 @@ Create file `env.local` to specify the database connection string.
 
 ```shell
 DATABASE_URL="mysql://root:my-secret-pw@127.0.0.1:3306/app?serverVersion=8&charset=utf8mb4"
+ADMIN_USERNAME=admin
+ADMIN_PASSWORD=ChangeMe!
 ```
 
 Update file `config/chia.yaml` to specify the collections and profiles you want to import.
