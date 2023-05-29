@@ -2,13 +2,14 @@ import React, { useState } from 'react';
 import useSWR from 'swr';
 import { Collection } from '../components/Collection';
 import { Container } from '../components/Container';
-import { Grid_G, Grid_K, List } from '../components/Icons';
-import {useCollection, useCollectionNfts, useProfile, useProfileNfts} from '../hooks/api';
+import { ProfileGallery } from '../components/ProfileGallery';
+import { useCollection, useCollectionNfts, useProfile } from '../hooks/api';
 import { fetcher } from '../utilities/fetcher';
 
 export const Browse: React.FC = () => {
   const [gridStyle, setGridStyle] = React.useState('grid-compact');
   const [name, setName] = useState('');
+  const [id, setId] = useState('');
 
   const { data: browseContent, isLoading } = useSWR('/api/browseContent', fetcher);
 
@@ -25,20 +26,16 @@ export const Browse: React.FC = () => {
   };
 
   const BrowseProfile = ({ profileId }: { profileId: string }) => {
-    const { did, isLoading } = useProfile(profileId);
-    const { createdNfts, error } = useProfileNfts(profileId);
+    const { did, isLoading, error } = useProfile(profileId);
 
     if (error) {
       return <div>Error loading Profile NFTs</div>;
     }
     if (!isLoading) {
-      if (did.name != 'undefined') {
-        setName(`Profile ${did.encodedId.substring(0, 20)}...`);
-      } else {
-        setName(`Profile ${did.name}`);
-      }
+      setId(did.encodedId);
+      setName(did.name);
     }
-    return <Collection isLoading={isLoading} collectionNfts={createdNfts} gridStyle={gridStyle} />;
+    return <ProfileGallery did={did} />;
   };
 
   const renderGallery = () => {
@@ -58,34 +55,15 @@ export const Browse: React.FC = () => {
   };
 
   const renderHeader = () => (
-    <div>
-      <div className="mb-8 flex justify-center text-3xl font-bold dark:text-white/90">{name}</div>
-      <div className="mb-2 flex justify-end">
-        <button
-          onClick={() => setGridStyle('list')}
-          className="rounded py-2 px-4 hover:bg-slate-200 dark:hover:bg-gray-800"
-        >
-          <List></List>
-        </button>
-        <button
-          onClick={() => setGridStyle('grid-compact')}
-          className="rounded py-2 px-4 hover:bg-slate-200 dark:hover:bg-gray-800"
-        >
-          <Grid_K></Grid_K>
-        </button>
-        <button
-          onClick={() => setGridStyle('grid')}
-          className="rounded py-2 px-4 hover:bg-slate-200 dark:hover:bg-gray-800"
-        >
-          <Grid_G></Grid_G>
-        </button>
-      </div>
+    <div className="flex flex-col items-center sm:mb-5">
+      <div className="text-2xl font-bold dark:text-white/90 lg:text-5xl">{name ? name : id}</div>
+      {name ? <div className="max-w-full truncate dark:text-white/90 lg:text-lg">{id}</div> : <div></div>}
     </div>
   );
 
   return (
     <>
-      <Container className="mt-16 sm:mt-32">
+      <Container className="mt-8 sm:mt-16">
         <div>{renderHeader()}</div>
         <div>{renderGallery()}</div>
       </Container>
