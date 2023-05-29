@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import { Nft } from '../interfaces/nft';
 import { MintSVG, TradeSVG, TransferSVG } from './Icons';
 
-export const NftProvenance: React.FC<{nft: Nft}> = ({ nft }) => {
+export const NftProvenance: React.FC<{ nft: Nft }> = ({ nft }) => {
   function renderTimestamp(event: any) {
     return (
       <div className="flex items-center gap-1 text-gray-500">
@@ -33,7 +33,7 @@ export const NftProvenance: React.FC<{nft: Nft}> = ({ nft }) => {
           </Link>
         ) : (
           <Link className="font-mono tracking-tighter" to={`/addresses/${event.address.id}`}>
-            {event.address.name || event.address.encodedAddress}
+            {event.address.name || event.address.encodedAddress.substring(0, 20)}
           </Link>
         )}
       </>
@@ -46,10 +46,10 @@ export const NftProvenance: React.FC<{nft: Nft}> = ({ nft }) => {
         <TradeSVG />
         <div>
           <div className="flex items-center gap-1">
-            <div className="flex items-center gap-1">
+            <div className="flex flex-wrap items-center gap-1">
               <div className="font-medium">Acquired by</div>
-              <div>{renderOwnerOrAddress(event)}</div>
-              <div>for</div>
+              {renderOwnerOrAddress(event)}
+              {event.xch_price ? <div>for</div> : ''}
             </div>
             {event.xch_price ? (
               <div className="flex items-center">
@@ -72,7 +72,7 @@ export const NftProvenance: React.FC<{nft: Nft}> = ({ nft }) => {
         <TransferSVG />
         <div>
           <div className="flex items-center gap-1">
-            <div className="flex items-center gap-1">
+            <div className="flex flex-wrap items-center gap-1">
               <div className="font-medium">Transferred to</div>
               <div>{renderOwnerOrAddress(event)}</div>
             </div>
@@ -89,7 +89,7 @@ export const NftProvenance: React.FC<{nft: Nft}> = ({ nft }) => {
         <MintSVG />
         <div>
           <div>
-            <div className="flex items-center gap-1">
+            <div className="flex flex-wrap items-center gap-1">
               <div className="font-medium">Minted by</div>
               <div>{renderOwnerOrAddress(event)}</div>
             </div>
