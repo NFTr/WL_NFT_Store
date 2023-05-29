@@ -1,12 +1,11 @@
 import { Popover, Transition } from '@headlessui/react';
 import clsx from 'clsx';
-
-import { Container } from './Container';
 import React, { Fragment, useEffect, useRef } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-
 import useSWR from 'swr';
 import { fetcher } from '../utilities/fetcher';
+import { Container } from './Container';
+import { GlobalSearch } from './GlobalSearch';
 
 function CloseIcon(props: any) {
   return (
@@ -378,7 +377,10 @@ export function Header() {
                 <MobileNavigation className="pointer-events-auto md:hidden" />
                 <DesktopNavigation className="pointer-events-auto hidden md:block" />
               </div>
-              <div className="flex justify-end md:flex-1">
+              <div className="flex justify-end gap-2 md:flex-1">
+                <div className="pointer-events-auto">
+                  <GlobalSearch />
+                </div>
                 <div className="pointer-events-auto">
                   <ModeToggle />
                 </div>
