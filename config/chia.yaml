@@ -12,6 +12,12 @@ parameters:
     title: Chia Friends
     subtitle: 10,000 eco-bit NFTs on Chia, from Chia.
     description: Display your Chia Friend PFP on Twitter and more to help spread the news about building projects on our new NFT standard. There’s also a puzzle embedded in the collection for the community to discover…that’s your only hint for now!
+    aboutTitle: Chia Friends
+    aboutImage: https://assets.mainnet.mintgarden.io/thumbnails/34f03d6d638d7a88ee4ef22241a65cf4fbad6a9cc9273bb18927cfba95d46ead_512.png
+    aboutContent: |
+      Display your Chia Friend PFP on Twitter and more to help spread the news about building projects on our new NFT standard. There’s also a puzzle embedded in the collection for the community to discover…that’s your only hint for now!
+      
+      This description also supports line breaks.
     twitterLink: https://twitter.com/chia_friends
     discordLink: https://discord.com/invite/ECAteZ2B6n
     highlightNfts:
