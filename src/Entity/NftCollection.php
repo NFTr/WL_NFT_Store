@@ -149,4 +149,13 @@ class NftCollection
 
         return $this;
     }
+
+
+    public function __toString()
+    {
+        if ($this->getName()) {
+            return $this->getName()." (".$this->getId().")";
+        }
+        return $this->getId();
+    }
 }

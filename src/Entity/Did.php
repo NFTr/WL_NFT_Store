@@ -149,4 +149,12 @@ class Did
 
         return $this;
     }
+
+    public function __toString()
+    {
+        if ($this->getName()) {
+            return $this->getName()." (".$this->getEncodedId().")";
+        }
+        return $this->getEncodedId();
+    }
 }
