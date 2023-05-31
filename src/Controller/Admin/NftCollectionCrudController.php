@@ -24,7 +24,7 @@ class NftCollectionCrudController extends AbstractCrudController
         return [
             IdField::new('id')->setMaxLength(255),
             TextField::new('name'),
-            TextareaField::new('description')->onlyOnForms(),
+            TextareaField::new('description')->hideOnIndex(),
         ];
     }
 

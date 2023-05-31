@@ -22,9 +22,12 @@ class NftCrudController extends AbstractCrudController
         return [
             IdField::new('id'),
             TextField::new('name'),
-            TextareaField::new('description'),
+            TextareaField::new('description')->hideOnIndex(),
             UrlField::new('thumbnailUri'),
             UrlField::new('previewUri'),
+            AssociationField::new('creator')->setCrudController(DidCrudController::class),
+            AssociationField::new('owner')->setCrudController(DidCrudController::class),
+            AssociationField::new('collection')->setCrudController(NftCollectionCrudController::class)
         ];
     }
 }
