@@ -17,7 +17,7 @@ export const NftPage: React.FC = () => {
   };
 
   const getAttributeValue = (type: string): string => {
-    return nft?.attributes.find((attributes: { type: string }) => attributes.type === type)?.value;
+    return nft?.attributes?.find((attributes: { type: string }) => attributes.type === type)?.value;
   };
 
   const { data: nft, error, isLoading } = useSWR<Nft>(`/api/nfts/${id}`, fetcher);
@@ -166,13 +166,27 @@ export const NftPage: React.FC = () => {
                     : 'rounded-xl') + ' h-full'
                 }
               >
-                <img
-                  onClick={toggleZoom}
-                  src={nft.previewUri}
-                  className={`max-h-full ${
-                    isZoomedIn ? 'relative cursor-zoom-out' : 'cursor-zoom-in rounded-xl'
-                  } object-contain`}
-                />
+                {nft.previewUri ? (
+                  <img
+                    onClick={toggleZoom}
+                    src={nft.previewUri}
+                    className={`max-h-full ${
+                      isZoomedIn ? 'relative cursor-zoom-out' : 'cursor-zoom-in rounded-xl'
+                    } object-contain`}
+                  />
+                ) : nft.dataUris?.[0]?.endsWith('.mp4') ? (
+                  <video
+                    onClick={toggleZoom}
+                    src={nft.dataUris?.[0]}
+                    controls
+                    loop
+                    className={`max-h-full ${
+                      isZoomedIn ? 'relative cursor-zoom-out' : 'cursor-zoom-in rounded-xl'
+                    } object-contain`}
+                  />
+                ) : (
+                  ''
+                )}
               </div>
             </div>
           ) : (
