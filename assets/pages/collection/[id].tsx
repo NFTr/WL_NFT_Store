@@ -13,17 +13,15 @@ export const CollectionPage: React.FC = () => {
   const [orderTerm, setOrderTerm] = useState<{ [key: string]: string }>({ id: 'asc' });
   const [searchTerm, setSearchTerm] = useState('');
   const { collection } = useCollection(id || '');
-  const [nftPage, setNftPage] = useState(1);
-  const { nfts, isLoading, error, totalPages } = useCollectionNfts(id || '', orderTerm, searchTerm, nftPage);
+  const { nfts, isLoading, error, totalPages, size, setSize } = useCollectionNfts(id || '', orderTerm, searchTerm);
   const [gridStyle, setGridStyle] = useState('grid-compact');
-  const [loadedNfts, setLoadedNfts] = useState<any[]>([]);
 
   const getAttributeValue = (type: string): string | undefined => {
     return collection?.attributes.find((attributes: { type: string }) => attributes.type === type)?.value;
   };
 
   const loadMoreNfts = () => {
-    setNftPage(nftPage + 1);
+    setSize(size + 1);
   };
 
   const bannerUrl = getAttributeValue('banner');
@@ -85,8 +83,8 @@ export const CollectionPage: React.FC = () => {
         <Search searchTerm={searchTerm} setSearchTerm={setSearchTerm}></Search>
         <GridStyle gridStyle={gridStyle} setGridStyle={setGridStyle}></GridStyle>
       </div>
-      <Collection isLoading={isLoading} collectionNfts={loadedNfts} gridStyle={gridStyle} />
-      {totalPages && nftPage < totalPages ? (
+      <Collection isLoading={isLoading} collectionNfts={nfts} gridStyle={gridStyle} />
+      {totalPages && size < totalPages ? (
         <div className="mt-6 flex w-full justify-center">
           <button
             onClick={loadMoreNfts}
@@ -98,16 +96,6 @@ export const CollectionPage: React.FC = () => {
       ) : null}
     </div>
   );
-
-  React.useEffect(() => {
-    if (nfts.length > 0) {
-      const uniqueNfts = nfts.filter((nft: { id: any }) => !loadedNfts.some((loadedNft) => loadedNft.id === nft.id));
-      setLoadedNfts([...loadedNfts, ...uniqueNfts]);
-    }
-    if (searchTerm !== '') {
-      setLoadedNfts(nfts);
-    }
-  }, [nfts, searchTerm]);
 
   return (
     <>

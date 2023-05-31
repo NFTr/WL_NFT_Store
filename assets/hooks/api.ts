@@ -1,5 +1,5 @@
-import { useState } from 'react';
 import useSWR from 'swr';
+import useSWRInfinite from 'swr/infinite';
 import { fetcher } from '../utilities/fetcher';
 
 function createQueryString(order?: { [key: string]: string }, search?: string, page?: number) {
@@ -35,34 +35,41 @@ export function useCollection(collectionId: string) {
   return { collection, error: undefined, isLoading: false };
 }
 
-export function useCollectionNfts(
-  collectionId: string,
-  order?: { [key: string]: string },
-  search?: string,
-  page?: number
-) {
-  const query = createQueryString(order, search, page);
+export function useCollectionNfts(collectionId: string, order?: { [key: string]: string }, search?: string) {
+  console.log('useColl')
+  const getKey = (pageIndex: number) => {
+    const query = createQueryString(order, search, pageIndex+1);
+
+    return `/api/collections/${collectionId}/nfts${query ? `?${query}` : ''}`; // SWR key
+  };
+
   const {
-    data: collectionNfts,
+    data: nftPages,
     error,
     isLoading,
-  } = useSWR(`/api/collections/${collectionId}/nfts${query ? `?${query}` : ''}`, fetcher, {
-    keepPreviousData: true,
+    size,
+    setSize,
+  } = useSWRInfinite(getKey, fetcher, {
+    // keepPreviousData: true,
   });
-  const nfts = collectionNfts?.['hydra:member'] || [];
-  const hydraView = collectionNfts?.['hydra:view'];
+
+
+  const nfts = nftPages?.reduce((acc, page) => [...acc, ...page['hydra:member'] || []], []) || [];
+  console.log(nfts)
+
+  const hydraView = nftPages && nftPages[nftPages.length-1]['hydra:view'];
   const totalPages =
     hydraView && hydraView['hydra:last'] ? parseInt(hydraView['hydra:last'].match(/page=(\d+)/)[1], 10) : [];
 
   if (isLoading) {
-    return { isLoading: true, nfts };
+    return { isLoading: true, nfts, size, setSize };
   }
 
   if (error) {
-    return { isLoading, nfts, error };
+    return { isLoading, nfts, error, size, setSize };
   }
 
-  return { nfts, error: undefined, isLoading: false, totalPages };
+  return { nfts, error: undefined, isLoading: false, totalPages, size, setSize };
 }
 
 export function useProfile(didId: string) {
