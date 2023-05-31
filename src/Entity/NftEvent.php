@@ -2,7 +2,6 @@
 
 namespace App\Entity;
 
-use ApiPlatform\Metadata\GetCollection;
 use App\Repository\NftEventRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
@@ -42,9 +41,9 @@ class NftEvent
     #[ORM\Id]
     private ?int $event_index = null;
 
-    public function getId(): ?int
+    public function getId(): ?string
     {
-        return $this->id;
+        return $this->nft->getId().'-'.$this->getEventIndex();
     }
 
     public function getNft(): ?Nft

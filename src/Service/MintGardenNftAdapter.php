@@ -70,7 +70,6 @@ class MintGardenNftAdapter implements NftAdapter
         $nfts = $this->nftRepository->findAll();
         foreach ($nfts as $nft) {
             $id = $nft->getId();
-            $existingEvents = $nft->getEvents();
 
             $response = $this->client->request(
                 'GET',
@@ -79,10 +78,15 @@ class MintGardenNftAdapter implements NftAdapter
             $JsonResponse = json_decode($response->getContent());
             $mintgardenNft = $JsonResponse;
             foreach ($mintgardenNft->events as $mintgardenEvent) {
-                $event = new NftEvent();
+                $event = $this->nftEventRepository->findOneBy(["nft" => $nft, "event_index"=>$mintgardenEvent->event_index]);
+                if (!$event) {
+                    $event = new NftEvent();
+                    $event->setNft($nft);
+                    $event->setEventIndex($mintgardenEvent->event_index);
+                }
+
                 $event->setType($this->convertEvent($mintgardenEvent->type));
                 $event->setTimestamp(DateTime::createFromFormat('Y-m-d\TH:i:sP', $mintgardenEvent->timestamp));
-                $event->setEventIndex($mintgardenEvent->event_index);
                 $event->setXchPrice($mintgardenEvent->xch_price);
 
                 if ($mintgardenEvent->owner) {
@@ -93,13 +97,9 @@ class MintGardenNftAdapter implements NftAdapter
                     $address = $this->getOrCreateAddress($mintgardenEvent->address->id);
                     $event->setAddress($address);
                 }
-
-                if (!in_array($event, array_column($existingEvents->toArray(), 'id'))) {
-                    $event->setNft($nft);
-                    $this->entityManager->persist($event);
-                    $this->entityManager->flush();
-                }
+                $this->nftEventRepository->save($event);
             }
+            $this->entityManager->flush();
 
             // Sleep for 500ms to not run into rate limiting
             usleep(50000);
