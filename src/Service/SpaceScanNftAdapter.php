@@ -144,6 +144,9 @@ class SpaceScanNftAdapter implements NftAdapter
         }
     }
 
+    /**
+     * @throws TransportExceptionInterface
+     */
     private function convertAndUpdateNft(?Nft $nft, mixed $nftToImport): Nft
     {
         $nftId = trim($nftToImport->nft_id);
@@ -164,8 +167,16 @@ class SpaceScanNftAdapter implements NftAdapter
             }
         }
 
-        $nft->setThumbnailUri("https://assets.spacescan.io/xch/img/nft/th/$nftId.webp");
-        $nft->setPreviewUri("https://assets.spacescan.io/xch/img/nft/full/$nftId.webp");
+        $response = $this->client->request(
+            'GET',
+            "https://assets.spacescan.io/xch/img/nft/th/$nftId.webp"
+        );
+
+        if ($response->getStatusCode() == 200) {
+            $nft->setThumbnailUri("https://assets.spacescan.io/xch/img/nft/th/$nftId.webp");
+            $nft->setPreviewUri("https://assets.spacescan.io/xch/img/nft/full/$nftId.webp");
+        }
+
         $nft->setDataHash($nftToImport->nft_info->data_hash);
         $nft->setDataUris($nftToImport->nft_info->data_uris);
         $nft->setMetaHash($nftToImport->nft_info->metadata_hash);
