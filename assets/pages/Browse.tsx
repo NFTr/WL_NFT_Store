@@ -1,41 +1,43 @@
 import React, { useState } from 'react';
+import { Link } from 'react-router-dom';
 import useSWR from 'swr';
-import { Collection } from '../components/Collection';
+import { CollectionGallery } from '../components/CollectionGallery';
 import { Container } from '../components/Container';
 import { ProfileGallery } from '../components/ProfileGallery';
 import { useCollection, useCollectionNfts, useProfile } from '../hooks/api';
 import { fetcher } from '../utilities/fetcher';
 
 export const Browse: React.FC = () => {
-  const [gridStyle, setGridStyle] = React.useState('grid-compact');
-  const [name, setName] = useState('');
-  const [id, setId] = useState('');
-
   const { data: browseContent, isLoading } = useSWR('/api/browseContent', fetcher);
 
   const BrowseCollection = ({ collectionId }: { collectionId: string }) => {
-    const { collection } = useCollection(collectionId);
-    const { nfts, isLoading, error } = useCollectionNfts(collectionId);
+    const { collection, error } = useCollection(collectionId);
+
     if (error) {
-      return <div>Error loading Collection</div>;
+      return <div>Error loading collection</div>;
     }
-    if (!isLoading) {
-      setName('Collection ' + collection.name);
-    }
-    return <Collection isLoading={isLoading} collectionNfts={nfts} gridStyle={gridStyle} />;
+
+    return (
+      <div>
+        {renderHeader(collectionId, `/collections/${collectionId}`, collection?.name)}
+        {collection && <CollectionGallery collection={collection} />}
+      </div>
+    );
   };
 
   const BrowseProfile = ({ profileId }: { profileId: string }) => {
-    const { did, isLoading, error } = useProfile(profileId);
+    const { did, error } = useProfile(profileId);
 
     if (error) {
-      return <div>Error loading Profile NFTs</div>;
+      return <div>Error loading Profile</div>;
     }
-    if (!isLoading) {
-      setId(did.encodedId);
-      setName(did.name);
-    }
-    return <ProfileGallery did={did} />;
+
+    return (
+      <div>
+        {renderHeader(did?.encodedId, `/profiles/${did?.id}`, did?.name)}
+        {did && <ProfileGallery did={did} />}
+      </div>
+    );
   };
 
   const renderGallery = () => {
@@ -43,28 +45,33 @@ export const Browse: React.FC = () => {
       return <div>Loading...</div>;
     }
 
-    let content = <div>Fail</div>;
-
-    if (browseContent.collections.length === 0) {
-      content = <BrowseProfile profileId={browseContent.profiles[0]} />;
-    } else {
-      content = <BrowseCollection collectionId={browseContent.collections[0]} />;
-    }
-
-    return content;
+    return (
+      <div className="flex flex-col gap-4 divide-y dark:divide-slate-700">
+        {[
+          ...browseContent.collections.map((collectionId: string) => (
+            <BrowseCollection key={collectionId} collectionId={collectionId} />
+          )),
+          ...browseContent.profiles.map((profileId: string) => <BrowseProfile key={profileId} profileId={profileId} />),
+        ].map((row) => (
+          <div className="py-4">{row}</div>
+        ))}
+      </div>
+    );
   };
 
-  const renderHeader = () => (
-    <div className="flex flex-col items-center sm:mb-5">
-      <div className="text-2xl font-bold dark:text-white/90 lg:text-5xl">{name ? name : id}</div>
-      {name ? <div className="max-w-full truncate dark:text-white/90 lg:text-lg">{id}</div> : <div></div>}
-    </div>
+  const renderHeader = (id: string, to: string, name?: string) => (
+    <Link
+      to={to}
+      className="flex flex-col items-center hover:text-slate-800 dark:text-white/90 dark:hover:text-slate-200/90 sm:mb-5"
+    >
+      <div className="text-2xl font-bold  lg:text-5xl">{name ? name : 'Unnamed'}</div>
+      {<div className="max-w-full truncate lg:text-lg">{id}</div>}
+    </Link>
   );
 
   return (
     <>
-      <Container className="mt-8 sm:mt-16">
-        <div>{renderHeader()}</div>
+      <Container className="my-8 sm:my-16">
         <div>{renderGallery()}</div>
       </Container>
     </>
